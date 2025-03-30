@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+build/
+dist/
+*.egg-info/
