@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/recommend', {
-        category: category.toLowerCase(),
-        criteria: criteria
-      });
-      navigate('/results', { state: { recommendations: response.data.recommendations } });
-    } catch (error) {
-      console.error('Lỗi:', error);
-    }
-  };
+const CriteriaSelection = () => {
+    const { category } = useParams();
+    const navigate = useNavigate();
+    
+    const [criteria, setCriteria] = useState({
+        weight: '',
+        purposes: [],
+        price: [0, 50000000]
+    });
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -33,14 +30,14 @@ const handleSubmit = async (e) => {
         const { name, value } = e.target;
         setCriteria((prev) => ({
             ...prev,
-            price: name === 'min_price' ? [parseInt(value), prev.price[1]] : [prev.price[0], parseInt(value)]
+            price: name === 'min_price' ? [parseInt(value) || 0, prev.price[1]] : [prev.price[0], parseInt(value) || 0]
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://127.0.0.1:8800/recommend', { category, criteria });
+            const response = await axios.post('http://127.0.0.1:8000/recommend', { category, criteria });
             navigate('/results', { state: { recommendations: response.data } });
         } catch (error) {
             console.error('Lỗi:', error);
