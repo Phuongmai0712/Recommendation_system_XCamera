@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRecommendations } from './services/api';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import CategorySelection from './components/CategorySelection';
+import CriteriaSelection from './components/CriteriaSelection';
+import Results from './components/Results';
 
 function App() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    fetchRecommendations()
-      .then(response => setData(response.data))
-      .catch(error => console.error(error));
-  }, []);
-
   return (
-    <div className="container mx-auto p-4">
-      {/* Render data */}
-    </div>
+    <Routes>
+      <Route path="/" element={<CategorySelection />} />
+      <Route path="/criteria/:category" element={<CriteriaSelection />} />
+      <Route path="/results" element={<Results />} />
+    </Routes>
   );
 }
 

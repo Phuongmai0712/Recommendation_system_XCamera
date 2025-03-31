@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const CriteriaSelection = () => {
-    const { category } = useParams();
-    const navigate = useNavigate();
-    const [criteria, setCriteria] = useState({
-        weight: '',
-        price: [0, 100000000],
-        purposes: []
-    });
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/recommend', {
+        category: category.toLowerCase(),
+        criteria: criteria
+      });
+      navigate('/results', { state: { recommendations: response.data.recommendations } });
+    } catch (error) {
+      console.error('Lỗi:', error);
+    }
+  };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

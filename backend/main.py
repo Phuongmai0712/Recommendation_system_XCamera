@@ -30,14 +30,14 @@ def load_data():
     try:
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name(r"D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
         sheet = client.open_by_url(sheet_url)
         inventory_df = pd.DataFrame(sheet.worksheet("Sheet1").get_all_records())
 
         # Preprocessing Inventory
-        inventory_df['Price'] = inventory_df['Price'].replace('[\$,]', '', regex=True).astype(float)
+        inventory_df['Price'] = inventory_df['Price'].replace(r'[\$,]', '', regex=True).astype(float)
         inventory_df['Model'] = inventory_df['Model'].str.strip().str.lower()
         inventory_df['Stock'] = inventory_df['Stock'].fillna(0).astype(int)
         inventory_df['Colour'] = inventory_df['Colour'].str.strip().str.lower()
@@ -490,6 +490,7 @@ async def recommend(request: RecommendationRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
       
