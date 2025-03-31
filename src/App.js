@@ -5,11 +5,13 @@ import Results from './components/Results';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<CategorySelection />} />
-      <Route path="/criteria/:category" element={<CriteriaSelection />} />
-      <Route path="/results" element={<Results />} />
-    </Routes>
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<CategorySelection />} />
+        <Route path="/criteria/:category" element={<CriteriaSelection />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
+    </div>
   );
 }
 
