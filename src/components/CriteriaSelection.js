@@ -63,7 +63,7 @@ const CriteriaSelection = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:8000/recommend', { category, criteria });
-            navigate('/results', { state: { recommendations: response.data } });
+            navigate('/results', { state: { recommendations: response.data.recommendations } });
         } catch (error) {
             console.error('Lỗi:', error);
         }

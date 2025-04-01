@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 const RecommendationResults = () => {
   const location = useLocation();
-  const recommendations = location.state?.recommendations || [];
+  console.log(location.state); 
+  const recommendations = location.state.recommendations || [];
 
   return (
     <div className="max-w-2xl mx-auto p-4">

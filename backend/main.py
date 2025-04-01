@@ -6,6 +6,7 @@ from functools import lru_cache
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pydantic import BaseModel
+from io import StringIO 
 from typing import List, Optional, Dict, Any
 
 app = FastAPI()
@@ -36,9 +37,10 @@ class RecommendationRequest(BaseModel):
 @lru_cache(maxsize=1)
 def load_data():
     try:
+        pd.set_option('future.no_silent_downcasting', True)
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
         # creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
@@ -84,7 +86,7 @@ GFX 50R,775,Medium Format (43.8x32.9mm),51.4,No,100,102400,No,,Yes,Contrast Dete
 GFX 100RF,735,Medium Format (43.8x32.9mm),102,Yes,100,12800,Yes,Tilt,Yes,Hybrid,5,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,2025,Fixed (35mm equiv.),133 x 90 x 76,mirrorless,Yes,820,0.25,0.85,0.25,0.7,0.6,0.6,0.6,0.85
 X-M5,355,APS-C (23.5x15.6mm),26,Yes,160,12800,Yes,Full,Yes,Hybrid,10,Yes,No,No,Yes,Yes,Yes,No,No,2024,Fujifilm X,112 x 64 x 38 ,mirrorless,No,300,0.85,0.4,0.25,0.7,0.85,0.85,0.85,0.25
 X-Pro4,450,APS-C (23.5x15.6mm),40.2,Yes,160,12800,Yes,Full,Yes,Hybrid,15,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,2025,Fujifilm X,128 x 75 x 54,mirrorless,Yes,450,0.4,0.85,0.4,0.7,0.6,0.6,0.4,0.7"""
-        specs_dfs['cameras'] = pd.read_csv(pd.compat.StringIO(cameras_data))
+        specs_dfs['cameras'] = pd.read_csv(StringIO(cameras_data))
 
         # Lenses (giữ nguyên dữ liệu của bạn)
         lenses_data = """Model,Lens Type,Focal Length (mm),Max Aperture,Image Stabilization (OIS),Weight (gram),Filter size (mm),Mount Type,Landscape,Travel,Portrait,Sports,Macro,Street,Video,Minimum Focusing Distance (mm)
@@ -125,7 +127,7 @@ TTArtisan 23mm f/1.8,Fixed,23,1.8,No,200,49,X-mount,0.6,0.68,0.58,0.2,0.25,0.82,
 TTArtisan 27mm f/2.8,Fixed,27,2.8,No,100,39,X-mount,0.58,0.9,0.55,0.15,0.2,0.8,0.2,35
 TTArtisan 35mm f/1.8,Fixed,35,1.8,No,220,52,X-mount,0.6,0.65,0.82,0.25,0.25,0.85,0.62,35
 TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.6,50"""
-        specs_dfs['lenses'] = pd.read_csv(pd.compat.StringIO(lenses_data))
+        specs_dfs['lenses'] = pd.read_csv(StringIO(lenses_data))
 
         # Drones (giữ nguyên dữ liệu của bạn)
         drones_data = """Model,Weight (gram),Max flight time (minutes),Control Range (km),Camera Resolution,Obstacle Avoidance sensor,Folded size (mm),Tracking,Orbit mode,Auto Rotation,Wind resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy of use
@@ -139,7 +141,7 @@ DJI Mini 4K,249,30,4,4K,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level
 DJI Mavic 3 Pro,895,43,15,5.1K,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
 DJI Air 2S,595,31,12,5.4K,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
 DJI Mavic 3 Classic,895,46,15,5.1K,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
-        specs_dfs['drones'] = pd.read_csv(pd.compat.StringIO(drones_data))
+        specs_dfs['drones'] = pd.read_csv((StringIO(drones_data)))
 
         # Gimbals (giữ nguyên dữ liệu của bạn)
         gimbals_data = """Model,Maximum Payload (kg),Battery Life (hours),Number of Stabilization Axes,Device Compatibility,Time-lapse,Follow mode,App Connectivity,Folded Size (mm),Stability,Travel,Vlogging,Professional,Easy of use
@@ -150,7 +152,7 @@ RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340 x 250 x 70,0.78,0.7,0.75,0.8,0.75
 RS4 Pro,4.5,12,3,"full-frame, big camera",Yes,Yes,Yes,340 x 250 x 70,0.95,0.5,0.65,0.98,0.7
 RS4,3,12,3,"full-frame, medium camera",Yes,Yes,Yes,340 x 250 x 70,0.92,0.55,0.68,0.95,0.72
 RS3 Pro,4.5,12,3,"full-frame, big camera",Yes,Yes,Yes,340 x 250 x 70,0.93,0.52,0.66,0.96,0.71"""
-        specs_dfs['gimbals'] = pd.read_csv(pd.compat.StringIO(gimbals_data))
+        specs_dfs['gimbals'] = pd.read_csv(StringIO(gimbals_data))
 
         # Action Cameras (giữ nguyên dữ liệu của bạn)
         action_cameras_data = """Model,Weight (gram),Video Recording Capabilities,Time-lapse,Slow motion,Dimensions (mm),Battery Life (minutes),Touchscreen,Dual screen,Wifi,Bluetooth,USB-C,Shock Resistance,Water resistance,Stability,Travel,Sports,Vlogging,Durability,Easy of use,Low-light performance
@@ -160,7 +162,8 @@ Osmo Action 5,145,"5.3K/60fps, 4K/120fps",Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes
 Osmo Action 4,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,18m,0.82,0.72,0.88,0.75,0.92,0.78,0.88
 Osmo Action 3,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,16m,0.8,0.7,0.85,0.7,0.9,0.75,0.8
 Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
-        specs_dfs['action_cameras'] = pd.read_csv(pd.compat.StringIO(action_cameras_data))
+        specs_dfs['action_cameras'] = pd.read_csv(StringIO(action_cameras_data))
+
 
         # 3. Tiền xử lý dữ liệu cho từng danh mục
         for category, specs_df in specs_dfs.items():
@@ -178,7 +181,7 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
             ]
             for col in yes_no_cols:
                 if col in specs_df.columns:
-                    specs_df[col] = specs_df[col].replace({'Yes': 1, 'No': 0, '': 0}).fillna(0).astype(int)
+                  specs_df[col] = specs_df[col].map({'Yes': 1, 'No': 0, '': 0}).fillna(0).astype('int')
 
             # Chuẩn hóa cột số
             numeric_cols = [
@@ -194,7 +197,7 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
                     specs_df[col] = pd.to_numeric(specs_df[col], errors='coerce')
 
             # Merge với Inventory
-            specs_df = specs_df.merge(inventory_df[['Model', 'Price', 'Stock', 'Colour', 'Condition','Series','Free Gift']], on='Model', how='inner')
+            specs_df = specs_df.merge(inventory_df[['Model', 'Price', 'Colour', 'Condition','Series','Free Gift']], on='Model', how='inner')
             specs_df['Colour'] = specs_df['Colour'].fillna('black').str.lower()  # Mặc định là black nếu không có
             specs_dfs[category] = specs_df
 
@@ -451,22 +454,28 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
     return df
 
-# Hàm tính điểm recommendation
 def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[str]) -> pd.DataFrame:
     valid_purposes = PURPOSES_PER_CATEGORY.get(category, [])
+
+    df.columns = df.columns.str.lower()
+    selected_purposes = [p.lower() for p in selected_purposes]
+    valid_purposes = [p.lower() for p in valid_purposes]
+
     purposes_to_use = [p for p in selected_purposes if p in valid_purposes and p in df.columns]
-    
+
     if not purposes_to_use:
         df['score'] = 0
     else:
         df['score'] = df[purposes_to_use].mean(axis=1)
-    
+
     return df
+
 # API endpoint
 @app.post("/recommend")
 async def recommend(request: RecommendationRequest):
     try:
         specs_dfs = load_data()
+        # print(specs_dfs)
         category = request.category.lower()
         
         if category not in specs_dfs:
@@ -476,31 +485,35 @@ async def recommend(request: RecommendationRequest):
         
         # Apply filters
         filtered_df = apply_filters(df, category, request.criteria)
-        
+        # print(filtered_df)
         # Calculate scores based on purposes
         selected_purposes = request.criteria.get('purposes', [])
         scored_df = calculate_scores(filtered_df, category, selected_purposes)
-        
+        # print(scored_df)
         # Sort and get top 3
-        scored_df = scored_df[scored_df['score'] >= 0.5]
+        # scored_df = scored_df[scored_df['score'] >= 0.5]
+        # print(scored_df)
         top_3 = scored_df.sort_values('score', ascending=False).head(3)
-        
+        # print(top_3)
         if top_3.empty:
             return {'message': 'Không tìm thấy sản phẩm phù hợp'}
         # Format response
         recommendations = []
         for _, row in top_3.iterrows():
+            row = row.rename(str.lower)
+
             rec = {
-                'model': row['Model'],
-                'price': row['Price'],
-                'score': round(row['score'], 2),
-                'colour': row.get('Colour', 'black'),
-                'series': row.get('Series', ''),
-                'condition': row.get('Condition', 'unknown'),
-                'free_gift': row.get('Free Gift', 'none'),
-                'details': {col: row[col] for col in df.columns if col not in ['Model', 'Price', 'score','Colour','Condition','Series','Free Gift']}
+                'model': row.get('model', 'unknown'),
+                'price': row.get('price', 'N/A'),
+                'score': round(row.get('score', 0), 2),
+                'colour': row.get('colour', 'black'),
+                'series': row.get('series', ''),
+                'condition': row.get('condition', 'unknown'),
+                'free_gift': row.get('free gift', 'none'),
+                'details': {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
             }
             recommendations.append(rec)
+
         
         return {'recommendations': recommendations}
     
