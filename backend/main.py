@@ -10,6 +10,14 @@ from typing import List, Optional, Dict, Any
 
 app = FastAPI()
 
+# Danh sách purposes hợp lệ cho từng category
+PURPOSES_PER_CATEGORY = {
+    'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily use', 'Travel', 'Vlogging', 'Studio'],
+    'lenses': ['Landscape', 'Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'],
+    'drones': ['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'],
+    'gimbals': ['Travel', 'Vlogging', 'Professional', 'Easy of use'],
+    'action_cameras': ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light performance']
+}
 # Cấu hình CORS
 app.add_middleware(
     CORSMiddleware,
@@ -31,7 +39,7 @@ def load_data():
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
-        # creds = ServiceAccountCredentials.from_json_keyfile_name("C:\Users\Admin\Downloads\inventoryreader-454903-25f852b85ccf.json", scope)
+        # creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
         sheet = client.open_by_url(sheet_url)
@@ -40,7 +48,6 @@ def load_data():
         # Preprocessing Inventory
         inventory_df['Price'] = inventory_df['Price'].replace(r'[\$,]', '', regex=True).astype(float)
         inventory_df['Model'] = inventory_df['Model'].str.strip().str.lower()
-        inventory_df['Stock'] = inventory_df['Stock'].fillna(0).astype(int)
         inventory_df['Colour'] = inventory_df['Colour'].str.strip().str.lower()
         inventory_df.dropna(subset=['Model'], inplace=True)
 
@@ -122,16 +129,16 @@ TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.
 
         # Drones (giữ nguyên dữ liệu của bạn)
         drones_data = """Model,Weight (gram),Max flight time (minutes),Control Range (km),Camera Resolution,Obstacle Avoidance sensor,Folded size (mm),Tracking,Orbit mode,Auto Rotation,Wind resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy of use
-DJI Flip,249,25,4,4K/30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
-DJI Mini 3,249,38,10,4K/30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
-DJI Mini 4 Pro,249,34,10,4K/60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,60,Yes,0.8,0.6,0.88,0.85,0.65,0.85
-DJI Air 3S,720,46,12,4K/120fps,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.88,0.78,0.7,0.8,0.85,0.75
-DJI Neo,300,30,6,4K/30fps,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,55,Yes,0.6,0.3,0.8,0.72,0.3,0.9
-DJI Avata 2,410,20,10,4K/60fps,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,60,No,0.72,0.85,0.5,0.6,0.55,0.65
-DJI Mini 4K,249,30,4,4K/30fps,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.68,0.35,0.8,0.7,0.4,0.82
-DJI Mavic 3 Pro,895,43,15,5.1K/50fps,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
-DJI Air 2S,595,31,12,5.4K/30fps,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
-DJI Mavic 3 Classic,895,46,15,5.1K/50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
+DJI Flip,249,25,4,4K,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
+DJI Mini 3,249,38,10,4K,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
+DJI Mini 4 Pro,249,34,10,4K,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,60,Yes,0.8,0.6,0.88,0.85,0.65,0.85
+DJI Air 3S,720,46,12,4K,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.88,0.78,0.7,0.8,0.85,0.75
+DJI Neo,300,30,6,4K,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,55,Yes,0.6,0.3,0.8,0.72,0.3,0.9
+DJI Avata 2,410,20,10,4K,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,60,No,0.72,0.85,0.5,0.6,0.55,0.65
+DJI Mini 4K,249,30,4,4K,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.68,0.35,0.8,0.7,0.4,0.82
+DJI Mavic 3 Pro,895,43,15,5.1K,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
+DJI Air 2S,595,31,12,5.4K,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
+DJI Mavic 3 Classic,895,46,15,5.1K,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
         specs_dfs['drones'] = pd.read_csv(pd.compat.StringIO(drones_data))
 
         # Gimbals (giữ nguyên dữ liệu của bạn)
@@ -187,8 +194,7 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
                     specs_df[col] = pd.to_numeric(specs_df[col], errors='coerce')
 
             # Merge với Inventory
-            specs_df = specs_df.merge(inventory_df[['Model', 'Price', 'Stock', 'Colour']], on='Model', how='left')
-            specs_df['Stock'] = specs_df['Stock'].fillna(0).astype(int)
+            specs_df = specs_df.merge(inventory_df[['Model', 'Price', 'Stock', 'Colour', 'Condition','Series','Free Gift']], on='Model', how='inner')
             specs_df['Colour'] = specs_df['Colour'].fillna('black').str.lower()  # Mặc định là black nếu không có
             specs_dfs[category] = specs_df
 
@@ -199,9 +205,12 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
 
 # Hàm xử lý filter cho từng category
 def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> pd.DataFrame:
-    # Lọc tồn kho
-    df = df[df['Stock'] > 0]
-    # Thêm lọc màu sắc cho cameras và lenses
+    # Lọc theo tình trạng (condition) cho tất cả các category
+    if 'Condition' in criteria and criteria['Condition']:
+        condition = criteria['Condition'].lower()
+        if condition in ['new', 'used']:
+            df = df[df['Condition'].str.lower() == condition]# Thêm lọc màu sắc cho cameras và lenses
+    # Lọc màu
     if category in ['cameras', 'lenses'] and 'Colour' in criteria and criteria['Colour']:
         df = df[df['Colour'] == criteria['Colour'].lower()]
     # Lọc theo category
@@ -321,8 +330,13 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # Obstacle Avoidance Sensor
         if 'Obstacle Avoidance Sensor' in criteria:
-            df = df[df['Obstacle Avoidance sensor'] == (1 if criteria['Obstacle Avoidance Sensor'] == 'Yes' else 0)]
-
+            sensor_criteria = criteria['Obstacle Avoidance Sensor']
+            if sensor_criteria == 'Yes':
+                # Giữ lại các hàng mà 'Obstacle Avoidance sensor' không phải là 'No'
+                df = df[df['Obstacle Avoidance sensor'] != 'No']
+            elif sensor_criteria == 'No':
+                # Giữ lại các hàng mà 'Obstacle Avoidance sensor' là 'No'
+                df = df[df['Obstacle Avoidance sensor'] == 'No']
         # Maximum Flight Speed
         if 'Maximum Flight Speed' in criteria:
             speed_map = {
@@ -438,19 +452,16 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
     return df
 
 # Hàm tính điểm recommendation
-def calculate_scores(df: pd.DataFrame, purposes: List[str]) -> pd.DataFrame:
-    if not purposes:
-        df['score'] = 0
-        return df
+def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[str]) -> pd.DataFrame:
+    valid_purposes = PURPOSES_PER_CATEGORY.get(category, [])
+    purposes_to_use = [p for p in selected_purposes if p in valid_purposes and p in df.columns]
     
-    valid_purposes = [p for p in purposes if p in df.columns]
-    if not valid_purposes:
+    if not purposes_to_use:
         df['score'] = 0
-        return df
+    else:
+        df['score'] = df[purposes_to_use].mean(axis=1)
     
-    df['score'] = df[valid_purposes].mean(axis=1)
     return df
-
 # API endpoint
 @app.post("/recommend")
 async def recommend(request: RecommendationRequest):
@@ -467,29 +478,33 @@ async def recommend(request: RecommendationRequest):
         filtered_df = apply_filters(df, category, request.criteria)
         
         # Calculate scores based on purposes
-        purposes = request.criteria.get('purposes', [])
-        scored_df = calculate_scores(filtered_df, purposes)
+        selected_purposes = request.criteria.get('purposes', [])
+        scored_df = calculate_scores(filtered_df, category, selected_purposes)
         
-        # Sort and get top 5
-        top_5 = scored_df.sort_values('score', ascending=False).head(5)
+        # Sort and get top 3
+        scored_df = scored_df[scored_df['score'] >= 0.5]
+        top_3 = scored_df.sort_values('score', ascending=False).head(3)
         
+        if top_3.empty:
+            return {'message': 'Không tìm thấy sản phẩm phù hợp'}
         # Format response
         recommendations = []
-        for _, row in top_5.iterrows():
+        for _, row in top_3.iterrows():
             rec = {
                 'model': row['Model'],
                 'price': row['Price'],
                 'score': round(row['score'], 2),
-                'stock': row['Stock'],
                 'colour': row.get('Colour', 'black'),
-                'details': {col: row[col] for col in df.columns if col not in ['Model', 'Price', 'Stock', 'score','Colour']}
+                'series': row.get('Series', ''),
+                'condition': row.get('Condition', 'unknown'),
+                'free_gift': row.get('Free Gift', 'none'),
+                'details': {col: row[col] for col in df.columns if col not in ['Model', 'Price', 'score','Colour','Condition','Series','Free Gift']}
             }
             recommendations.append(rec)
         
         return {'recommendations': recommendations}
     
-    except Exception as e:
-        print(str(e))  
+    except Exception as e: 
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
