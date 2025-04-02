@@ -63,7 +63,7 @@ const CriteriaSelection = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://127.0.0.1:8000/recommend', { category, criteria });
-            navigate('/results', { state: { recommendations: response.data.recommendations } });
+            navigate('/results', { state: { recommendations: response.data } });
         } catch (error) {
             console.error('Lỗi:', error);
         }
@@ -169,7 +169,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Beginner', 'Professional', 'Sports', 'Video', 'Travel', 'Vlogging'].map((purpose) => (
+                            {['Beginner', 'Professional', 'Sports', 'Video', 'Daily use', 'Travel', 'Vlogging','Studio'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -191,7 +191,7 @@ const CriteriaSelection = () => {
                             <label>Loại ống kính:</label><br />
                             <select name="lensType" onChange={handleChange} value={criteria.lensType}>
                                 <option value="">Chọn</option>
-                                <option value="Prime">Prime</option>
+                                <option value="Fixed">Prime</option>
                                 <option value="Zoom">Zoom</option>
                             </select>
                         </div>
@@ -214,7 +214,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Landscape', 'Portrait', 'Sports', 'Macro', 'Street'].map((purpose) => (
+                            {['Landscape','Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -302,7 +302,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Stability', 'Sports', 'Travel', 'Vlogging', 'Professional'].map((purpose) => (
+                            {['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -364,7 +364,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Stability', 'Travel', 'Vlogging', 'Professional'].map((purpose) => (
+                            {['Travel', 'Vlogging', 'Professional', 'Easy of use'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -426,7 +426,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Stability', 'Travel', 'Sports', 'Vlogging'].map((purpose) => (
+                            {['Travel', 'Sports', 'Vlogging','Durability','Easy of use', 'Low-light performance'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"

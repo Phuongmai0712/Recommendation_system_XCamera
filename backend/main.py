@@ -40,7 +40,7 @@ def load_data():
         pd.set_option('future.no_silent_downcasting', True)
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("D://KLTN//inventoryreader-454903-25f852b85ccf.json", scope)
         # creds = ServiceAccountCredentials.from_json_keyfile_name("D:\KLTN\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
