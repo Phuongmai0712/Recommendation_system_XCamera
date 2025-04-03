@@ -13,11 +13,11 @@ app = FastAPI()
 
 # Danh sách purposes hợp lệ cho từng category
 PURPOSES_PER_CATEGORY = {
-    'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily use', 'Travel', 'Vlogging', 'Studio'],
+    'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging', 'Studio'],
     'lenses': ['Landscape', 'Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'],
     'drones': ['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'],
     'gimbals': ['Travel', 'Vlogging', 'Professional', 'Easy of use'],
-    'action_cameras': ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light performance']
+    'action_cameras': ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light Performance']
 }
 # Cấu hình CORS
 app.add_middleware(
@@ -57,7 +57,7 @@ def load_data():
         specs_dfs = {}
 
         # Cameras (giữ nguyên dữ liệu của bạn)
-        cameras_data = """Model,Weight (gram),Sensor Size,Resolution (MP),Quay 4K,ISO Min,ISO Max,Flipscreen,Flipscreen type,Film Simulation,Autofocus Type,Burst Shooting (fps),External Mic Input,Optical viewfinder,Electronic viewfinder (EVF),USB-C,WiFi,Bluetooth,IBIS,Weathersealing,Release Year,Compatible Lens Type,Dimensions (mm),Design Style,Rangefinder-style,Battery Life (frames),Beginner,Professional,Sports,Video,Daily use,Travel,Vlogging,Studio
+        cameras_data = """Model,Weight (gram),Sensor Size,Resolution (MP),4K Video,ISO Min,ISO Max,Flipscreen,Flipscreen Type,Film Simulation,Autofocus Type,Burst Shooting (fps),External Mic Input,Optical Viewfinder,Electronic Viewfinder (EVF),USB-C,WiFi,Bluetooth,IBIS,Weathersealing,Release Year,Compatible Lens Type,Dimensions (mm),Design Style,Rangefinder Style,Battery Life (frames),Beginner,Professional,Sports,Video,Daily Use,Travel,Vlogging,Studio
 X-H2S,660,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,580,0.4,0.9,0.9,0.9,0.4,0.4,0.6,0.9
 X-H2,660,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,680,0.4,0.9,0.7,0.9,0.4,0.4,0.6,0.9
 X-T5,557,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Tilt,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,130x91x64,mirrorless,No,580,0.4,0.85,0.7,0.7,0.6,0.6,0.6,0.85
@@ -89,7 +89,7 @@ X-Pro4,450,APS-C (23.5x15.6mm),40.2,Yes,160,12800,Yes,Full,Yes,Hybrid,15,Yes,Yes
         specs_dfs['cameras'] = pd.read_csv(StringIO(cameras_data))
 
         # Lenses (giữ nguyên dữ liệu của bạn)
-        lenses_data = """Model,Lens Type,Focal Length (mm),Max Aperture,Image Stabilization (OIS),Weight (gram),Filter size (mm),Mount Type,Landscape,Travel,Portrait,Sports,Macro,Street,Video,Minimum Focusing Distance (mm)
+        lenses_data = """Model,Lens Type,Focal Length (mm),Max Aperture,Image Stabilization (OIS),Weight (gram),Filter Size (mm),Mount Type,Landscape,Travel,Portrait,Sports,Macro,Street,Video,Minimum Focusing Distance (mm)
 XF 8mm f/3.5 R WR,Fixed,8,3.5,No,215,62,X-mount,0.92,0.88,0.15,0.1,0.2,0.65,0.3,20
 XF 14mm f/2.8 R,Fixed,14,2.8,No,235,58,X-mount,0.88,0.82,0.2,0.15,0.25,0.7,0.35,18
 XF 16mm f/1.4 R WR,Fixed,16,1.4,No,375,67,X-mount,0.85,0.68,0.62,0.2,0.78,0.82,0.58,15
@@ -130,17 +130,17 @@ TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.
         specs_dfs['lenses'] = pd.read_csv(StringIO(lenses_data))
 
         # Drones (giữ nguyên dữ liệu của bạn)
-        drones_data = """Model,Weight (gram),Max flight time (minutes),Control Range (km),Camera Resolution,Obstacle Avoidance sensor,Folded size (mm),Tracking,Orbit mode,Auto Rotation,Wind resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy of use
-DJI Flip,249,25,4,4K,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
-DJI Mini 3,249,38,10,4K,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
-DJI Mini 4 Pro,249,34,10,4K,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,60,Yes,0.8,0.6,0.88,0.85,0.65,0.85
-DJI Air 3S,720,46,12,4K,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.88,0.78,0.7,0.8,0.85,0.75
-DJI Neo,300,30,6,4K,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,55,Yes,0.6,0.3,0.8,0.72,0.3,0.9
-DJI Avata 2,410,20,10,4K,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,60,No,0.72,0.85,0.5,0.6,0.55,0.65
-DJI Mini 4K,249,30,4,4K,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.68,0.35,0.8,0.7,0.4,0.82
-DJI Mavic 3 Pro,895,43,15,5.1K,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
-DJI Air 2S,595,31,12,5.4K,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
-DJI Mavic 3 Classic,895,46,15,5.1K,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
+        drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Frames Per Sec,Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy of use
+DJI Flip,249,25,4,4K,30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
+DJI Mini 3,249,38,10,4K,30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
+DJI Mini 4 Pro,249,34,10,4K,60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,60,Yes,0.8,0.6,0.88,0.85,0.65,0.85
+DJI Air 3S,720,46,12,4K,120fps,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.88,0.78,0.7,0.8,0.85,0.75
+DJI Neo,300,30,6,4K,30fps,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,55,Yes,0.6,0.3,0.8,0.72,0.3,0.9
+DJI Avata 2,410,20,10,4K,60fps,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,60,No,0.72,0.85,0.5,0.6,0.55,0.65
+DJI Mini 4K,249,30,4,4K,30fps,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.68,0.35,0.8,0.7,0.4,0.82
+DJI Mavic 3 Pro,895,43,15,5.1K,50fps,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
+DJI Air 2S,595,31,12,5.4K,30fps,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
+DJI Mavic 3 Classic,895,46,15,5.1K,50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
         specs_dfs['drones'] = pd.read_csv((StringIO(drones_data)))
 
         # Gimbals (giữ nguyên dữ liệu của bạn)
@@ -155,7 +155,7 @@ RS3 Pro,4.5,12,3,"full-frame, big camera",Yes,Yes,Yes,340 x 250 x 70,0.93,0.52,0
         specs_dfs['gimbals'] = pd.read_csv(StringIO(gimbals_data))
 
         # Action Cameras (giữ nguyên dữ liệu của bạn)
-        action_cameras_data = """Model,Weight (gram),Video Recording Capabilities,Time-lapse,Slow motion,Dimensions (mm),Battery Life (minutes),Touchscreen,Dual screen,Wifi,Bluetooth,USB-C,Shock Resistance,Water resistance,Stability,Travel,Sports,Vlogging,Durability,Easy of use,Low-light performance
+        action_cameras_data = """Model,Weight (gram),Video Recording Capabilities,Time-lapse,Slow Motion,Dimensions (mm),Battery Life (minutes),Touchscreen,Dual Screen,Wifi,Bluetooth,USB-C,Shock Resistance,Water Resistance,Stability,Travel,Sports,Vlogging,Durability,Easy of use,Low-light Performance
 Osmo Pocket 3,179,4K/120fps,Yes,Yes,140 x 40 x 30,140,Yes,No,Yes,Yes,Yes,No,No,0.92,0.9,0.6,0.95,0.5,0.9,0.85
 Osmo Pocket 2,117,4K/60fps,Yes,Yes,124 x 35 x 30,140,Yes,No,Yes,Yes,Yes,No,No,0.88,0.85,0.55,0.8,0.45,0.82,0.65
 Osmo Action 5,145,"5.3K/60fps, 4K/120fps",Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,20m,0.85,0.75,0.9,0.78,0.95,0.8,0.9
@@ -171,12 +171,12 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
 
             # Mã hóa các cột Yes/No
             yes_no_cols = [
-                "Quay 4K", "Flipscreen", "WiFi", "USB-C", "Image Stabilization (OIS)", 
+                "4K Video", "Flipscreen", "WiFi", "USB-C", "Image Stabilization (OIS)", 
                 "Film Simulation", "External Mic Input", "Bluetooth", "IBIS", 
-                "Weathersealing", "Optical viewfinder", "Electronic viewfinder (EVF)", 
-                "OIS", "Tracking", "Orbit mode", "Vertical Video Recording",
-                "Time-lapse", "Slow motion", "Water resistance", "Shock Resistance", 
-                "Follow mode", "App Connectivity", "Touchscreen", "Dual screen", 
+                "Weathersealing", "Optical Viewfinder", "Electronic Viewfinder (EVF)", 
+                "OIS", "Tracking", "Orbit Mode", "Vertical Video Recording",
+                "Time-lapse", "Slow Motion", "Water Resistance", "Shock Resistance", 
+                "Follow Mode", "App Connectivity", "Touchscreen", "Dual Screen", 
                 "Auto Rotation"
             ]
             for col in yes_no_cols:
@@ -187,7 +187,7 @@ Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.6
             numeric_cols = [
                 "Weight (gram)", "Resolution (MP)", "ISO Min", "ISO Max", 
                 "Burst Shooting (fps)", "Battery Life (frames)", "Focal Length (mm)", 
-                "Max Aperture", "Minimum Focusing Distance (mm)", "Max flight time (minutes)", 
+                "Max Aperture", "Minimum Focusing Distance (mm)", "Max Flight Time (minutes)", 
                 "Control Range (km)", "Battery Capability (mAh)", "Maximum Flight Speed (km/h)", 
                 "Maximum Payload (kg)", "Battery Life (hours)", "Battery Life (minutes)", 
                 "Number of Stabilization Axes"
@@ -246,8 +246,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # 4K Video
         if '4K Video' in criteria:
-            df = df[df['Quay 4K'] == (1 if criteria['4K Video'] == 'Yes' else 0)]
-
+            df = df[df['4K Video'] == criteria['4K Video']]
+        
         # ISO Max
         if 'ISO Max' in criteria:
             iso_map = {
@@ -270,9 +270,9 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # Viewfinder
         if 'Optical Viewfinder' in criteria:
-            df = df[df['Optical viewfinder'] == (1 if criteria['Optical Viewfinder'] == 'Yes' else 0)]
-        if 'Electronic Viewfinder' in criteria:
-            df = df[df['Electronic viewfinder (EVF)'] == (1 if criteria['Electronic Viewfinder'] == 'Yes' else 0)]
+            df = df[df['Optical Viewfinder'] == (1 if criteria['Optical Viewfinder'] == 'Yes' else 0)]
+        if 'Electronic Viewfinder (EVF)' in criteria:
+            df = df[df['Electronic Viewfinder (EVF)'] == (1 if criteria['Electronic Viewfinder (EVF)'] == 'Yes' else 0)]
 
         # Special Features
         special_features = {
@@ -330,6 +330,10 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Camera Resolution
         if 'Camera Resolution' in criteria:
             df = df[df['Camera Resolution'] == criteria['Camera Resolution']]
+        
+        # Frames per sec
+        if 'Frames Per Sec' in criteria:
+            df = df[df['Frames Per Sec'] == criteria['Frames Per Sec']]
 
         # Obstacle Avoidance Sensor
         if 'Obstacle Avoidance Sensor' in criteria:
@@ -340,32 +344,33 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
             elif sensor_criteria == 'No':
                 # Giữ lại các hàng mà 'Obstacle Avoidance sensor' là 'No'
                 df = df[df['Obstacle Avoidance sensor'] == 'No']
+        
         # Maximum Flight Speed
-        if 'Maximum Flight Speed' in criteria:
+        if 'Maximum Flight Speed (km/h)' in criteria:
             speed_map = {
                 'Low': (None, 60),
                 'Medium': (60, 70),
                 'High': (70, None)
             }
-            min_speed, max_speed = speed_map[criteria['Maximum Flight Speed']]
+            min_speed, max_speed = speed_map[criteria['Maximum Flight Speed (km/h)']]
             if min_speed: df = df[df['Maximum Flight Speed (km/h)'] >= min_speed]
             if max_speed: df = df[df['Maximum Flight Speed (km/h)'] <= max_speed]
 
         # Control Range
-        if 'Control Range' in criteria:
+        if 'Control Range (km)' in criteria:
             range_map = {
                 'Short': (None, 6),
                 'Medium': (6, 10),
                 'Long': (10, None)
             }
-            min_range, max_range = range_map[criteria['Control Range']]
+            min_range, max_range = range_map[criteria['Control Range (km)']]
             if min_range: df = df[df['Control Range (km)'] >= min_range]
             if max_range: df = df[df['Control Range (km)'] <= max_range]
 
         # Special Features
         special_features = {
             'Tracking': 'Tracking',
-            'Orbit mode': 'Orbit mode',
+            'Orbit Mode': 'Orbit Mode',
             'Vertical Video Recording': 'Vertical Video Recording'
         }
         for feature, col in special_features.items():
@@ -374,24 +379,24 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
     elif category == 'gimbals':
         # Maximum Payload
-        if 'Maximum Payload' in criteria:
+        if 'Maximum Payload (kg)' in criteria:
             payload_map = {
                 '<= 0.3kg': (None, 0.3),
                 '0.3-2kg': (0.3, 2),
                 'Above 2kg': (2, None)
             }
-            min_payload, max_payload = payload_map[criteria['Maximum Payload']]
+            min_payload, max_payload = payload_map[criteria['Maximum Payload (kg)']]
             if min_payload: df = df[df['Maximum Payload (kg)'] >= min_payload]
             if max_payload: df = df[df['Maximum Payload (kg)'] <= max_payload]
 
         # Battery Life
-        if 'Battery Life' in criteria:
+        if 'Battery Life (hours)' in criteria:
             battery_map = {
                 'Below 10h': (None, 10),
                 '10-15h': (10, 15),
                 'Above 15h': (15, None)
             }
-            min_battery, max_battery = battery_map[criteria['Battery Life']]
+            min_battery, max_battery = battery_map[criteria['Battery Life (hours)']]
             if min_battery: df = df[df['Battery Life (hours)'] >= min_battery]
             if max_battery: df = df[df['Battery Life (hours)'] <= max_battery]
 
@@ -402,7 +407,7 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Special Features
         special_features = {
             'Time-lapse': 'Time-lapse',
-            'Follow mode': 'Follow mode',
+            'Follow Mode': 'Follow Mode',
             'App Connectivity': 'App Connectivity'
         }
         for feature, col in special_features.items():
@@ -423,25 +428,26 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # Video Recording Capabilities
         if 'Video Recording Capabilities' in criteria:
-            df = df[df['Video Recording Capabilities'] == criteria['Video Recording Capabilities']]
+            selected_capability = criteria['Video Recording Capabilities']
+            df = df[df['Video Recording Capabilities'].str.contains(selected_capability, na=False)]
 
         # Battery Life
-        if 'Battery Life' in criteria:
+        if 'Battery Life (minutes)' in criteria:
             battery_map = {
                 'Below 100 minutes': (None, 100),
                 '100-150 minutes': (100, 150),
                 'Above 150 minutes': (150, None)
             }
-            min_battery, max_battery = battery_map[criteria['Battery Life']]
+            min_battery, max_battery = battery_map[criteria['Battery Life (minutes)']]
             if min_battery: df = df[df['Battery Life (minutes)'] >= min_battery]
             if max_battery: df = df[df['Battery Life (minutes)'] <= max_battery]
 
         # Special Features
         special_features = {
             'Time-lapse': 'Time-lapse',
-            'Slow motion': 'Slow motion',
-            'Water resistance': 'Water resistance',
-            'Shock resistance': 'Shock Resistance'
+            'Slow Motion': 'Slow Motion',
+            'Water Resistance': 'Water Resistance',
+            'Shock Resistance': 'Shock Resistance'
         }
         for feature, col in special_features.items():
             if feature in criteria and criteria[feature]:
