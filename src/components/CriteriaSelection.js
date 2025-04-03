@@ -111,7 +111,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>ISO tối đa:</label><br />
-                            <select name="Iso Max" onChange={handleChange} value={criteria['Iso Max']}>
+                            <select name="ISO Max" onChange={handleChange} value={criteria['ISO Max']}>
                                 <option value="">Chọn</option>
                                 <option value="Low">Thấp (&lt;6400, sáng tốt)</option>
                                 <option value="Medium">Trung bình (6400-12800, linh hoạt)</option>

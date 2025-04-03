@@ -132,6 +132,7 @@ dist
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
+*.csv
 
 # Optional stylelint cache
 

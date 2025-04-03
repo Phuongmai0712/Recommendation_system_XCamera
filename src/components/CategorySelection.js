@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const categories = ['Cameras', 'Lenses', 'Drones', 'Gimbals', 'Action Cameras'];
+const categories = ['Cameras', 'Lenses', 'Drones', 'Gimbals', 'Action_cameras'];
 
 const CategorySelection = () => {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ const CategorySelection = () => {
                             textAlign: 'center'
                         }}
                     >
-                        {category}
+                        {category == "Action_cameras" ? "Action Cameras" : category}
                     </div>
                 ))}
             </div>
