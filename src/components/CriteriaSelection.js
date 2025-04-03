@@ -77,7 +77,7 @@ const CriteriaSelection = () => {
                     <>
                         <div>
                             <label>Trọng lượng:</label><br />
-                            <select name="weight" onChange={handleChange} value={criteria.weight}>
+                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
                                 <option value="">Chọn</option>
                                 <option value="Light">Nhẹ (&lt;400g)</option>
                                 <option value="Medium">Trung bình (400-600g)</option>
@@ -86,15 +86,15 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Kiểu dáng:</label><br />
-                            <select name="designStyle" onChange={handleChange} value={criteria.designStyle}>
+                            <select name="Design Style" onChange={handleChange} value={criteria['Design Style']}>
                                 <option value="">Chọn</option>
-                                <option value="Mirrorless">Mirrorless</option>
-                                <option value="Compact">Compact</option>
+                                <option value="mirrorless">Mirrorless</option>
+                                <option value="compact">Compact</option>
                             </select>
                         </div>
                         <div>
                             <label>Độ phân giải (MP):</label><br />
-                            <select name="resolution" onChange={handleChange} value={criteria.resolution}>
+                            <select name="Resolution" onChange={handleChange} value={criteria['Resolution']}>
                                 <option value="">Chọn</option>
                                 <option value="Below 20MP">Dưới 20MP (nhu cầu cơ bản)</option>
                                 <option value="20-30MP">20-30MP (bán chuyên)</option>
@@ -103,7 +103,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Quay video 4K:</label><br />
-                            <select name="video4K" onChange={handleChange} value={criteria.video4K}>
+                            <select name="4K Video" onChange={handleChange} value={criteria['4K Video']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -111,7 +111,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>ISO tối đa:</label><br />
-                            <select name="isoMax" onChange={handleChange} value={criteria.isoMax}>
+                            <select name="Iso Max" onChange={handleChange} value={criteria['Iso Max']}>
                                 <option value="">Chọn</option>
                                 <option value="Low">Thấp (&lt;6400, sáng tốt)</option>
                                 <option value="Medium">Trung bình (6400-12800, linh hoạt)</option>
@@ -120,7 +120,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Màn hình lật:</label><br />
-                            <select name="flipscreen" onChange={handleChange} value={criteria.flipscreen}>
+                            <select name="Flipscreen" onChange={handleChange} value={criteria['Flipscreen']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -128,7 +128,7 @@ const CriteriaSelection = () => {
                             {criteria.flipscreen === 'Yes' && (
                                 <div>
                                     <label>Loại màn hình lật:</label><br />
-                                    <select name="flipscreenType" onChange={handleChange} value={criteria.flipscreenType}>
+                                    <select name="Flipscreen type" onChange={handleChange} value={criteria['Flipscreen type']}>
                                         <option value="">Chọn</option>
                                         <option value="Tilt">Tilt (góc thấp)</option>
                                         <option value="Full">Full (vlogging, selfie)</option>
@@ -138,7 +138,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Kính ngắm quang học:</label><br />
-                            <select name="opticalViewfinder" onChange={handleChange} value={criteria.opticalViewfinder}>
+                            <select name="Optical Viewfinder" onChange={handleChange} value={criteria['Optical Viewfinder']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -146,7 +146,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Kính ngắm điện tử:</label><br />
-                            <select name="electronicViewfinder" onChange={handleChange} value={criteria.electronicViewfinder}>
+                            <select name="Electronic Viewfinder (EVF)" onChange={handleChange} value={criteria['Electronic Viewfinder (EVF)']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -169,7 +169,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Beginner', 'Professional', 'Sports', 'Video', 'Daily use', 'Travel', 'Vlogging','Studio'].map((purpose) => (
+                            {['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging','Studio'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -189,7 +189,7 @@ const CriteriaSelection = () => {
                     <>
                         <div>
                             <label>Loại ống kính:</label><br />
-                            <select name="lensType" onChange={handleChange} value={criteria.lensType}>
+                            <select name="Lens Type" onChange={handleChange} value={criteria['Lens Type']}>
                                 <option value="">Chọn</option>
                                 <option value="Fixed">Prime</option>
                                 <option value="Zoom">Zoom</option>
@@ -197,7 +197,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Khẩu độ tối đa:</label><br />
-                            <select name="maxAperture" onChange={handleChange} value={criteria.maxAperture}>
+                            <select name="Max Aperture" onChange={handleChange} value={criteria['Max Aperture']}>
                                 <option value="">Chọn</option>
                                 <option value="Wide">Rộng (&lt;f/2.8, chụp đêm, bokeh)</option>
                                 <option value="Medium">Trung bình (f/2.8-f/4, đa dụng)</option>
@@ -206,7 +206,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Chống rung quang học (OIS):</label><br />
-                            <select name="ois" onChange={handleChange} value={criteria.ois}>
+                            <select name="OIS" onChange={handleChange} value={criteria['OIS']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -234,7 +234,7 @@ const CriteriaSelection = () => {
                     <>
                         <div>
                             <label>Trọng lượng:</label><br />
-                            <select name="weight" onChange={handleChange} value={criteria.weight}>
+                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
                                 <option value="">Chọn</option>
                                 <option value="Light">Nhẹ (&lt;250g)</option>
                                 <option value="Medium">Trung bình (250-900g)</option>
@@ -243,7 +243,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Thời gian bay tối đa (phút):</label><br />
-                            <select name="maxFlightTime" onChange={handleChange} value={criteria.maxFlightTime}>
+                            <select name="Max Flight Time" onChange={handleChange} value={criteria['Max Flight Time']}>
                                 <option value="">Chọn</option>
                                 <option value="Below 20 minutes">Dưới 20 phút</option>
                                 <option value="20-30 minutes">20-30 phút</option>
@@ -252,7 +252,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Độ phân giải camera:</label><br />
-                            <select name="cameraResolution" onChange={handleChange} value={criteria.cameraResolution}>
+                            <select name="Camera Resolution" onChange={handleChange} value={criteria["Camera Resolution"]}>
                                 <option value="">Chọn</option>
                                 <option value="4K">4K</option>
                                 <option value="5.1K">5.1K</option>
@@ -260,8 +260,18 @@ const CriteriaSelection = () => {
                             </select>
                         </div>
                         <div>
+                            <label>Khung hình mỗi giây:</label><br />
+                            <select name="Frames Per Sec" onChange={handleChange} value={criteria['Frames Per Sec']}>
+                                <option value="">Chọn</option>
+                                <option value="30fps">30fps</option>
+                                <option value="50fps">50fps</option>
+                                <option value="60fps">60fps</option>
+                                <option value="120fps">120fps</option>
+                            </select>
+                        </div>
+                        <div>
                             <label>Cảm biến tránh vật cản:</label><br />
-                            <select name="obstacleAvoidance" onChange={handleChange} value={criteria.obstacleAvoidance}>
+                            <select name="Obstacle Avoidance Sensor" onChange={handleChange} value={criteria['Obstacle Avoidance Sensor']}>
                                 <option value="">Chọn</option>
                                 <option value="Yes">Có</option>
                                 <option value="No">Không</option>
@@ -269,7 +279,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Tốc độ bay tối đa:</label><br />
-                            <select name="maxFlightSpeed" onChange={handleChange} value={criteria.maxFlightSpeed}>
+                            <select name="Maximum Flight Speed (km/h)" onChange={handleChange} value={criteria['Maximum Flight Speed (km/h)}']}>
                                 <option value="">Chọn</option>
                                 <option value="Low">Thấp (&lt;60 km/h, quay chậm)</option>
                                 <option value="Medium">Trung bình (60-70 km/h, đa dụng)</option>
@@ -278,7 +288,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Khoảng cách điều khiển:</label><br />
-                            <select name="controlRange" onChange={handleChange} value={criteria.controlRange}>
+                            <select name="Control Range (km)" onChange={handleChange} value={criteria['Control Range (km)']}>
                                 <option value="">Chọn</option>
                                 <option value="Short">Ngắn (&lt;6 km, quay gần)</option>
                                 <option value="Medium">Trung bình (6-10 km, du lịch)</option>
@@ -287,7 +297,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Tính năng đặc biệt:</label><br />
-                            {['Tracking', 'Orbit mode', 'Vertical Video Recording'].map((feature) => (
+                            {['Tracking', 'Orbit Mode', 'Vertical Video Recording'].map((feature) => (
                                 <label key={feature} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -322,7 +332,7 @@ const CriteriaSelection = () => {
                     <>
                         <div>
                             <label>Khả năng tải tối đa (kg):</label><br />
-                            <select name="maximumPayload" onChange={handleChange} value={criteria.maximumPayload}>
+                            <select name="Maximum Payload (kg)" onChange={handleChange} value={criteria['Maximum Payload (kg)']}>
                                 <option value="">Chọn</option>
                                 <option value="<= 0.3kg">&lt;= 0.3kg (Smartphone)</option>
                                 <option value="0.3-2kg">0.3-2kg (Small camera)</option>
@@ -331,7 +341,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Thời lượng pin (giờ):</label><br />
-                            <select name="batteryLife" onChange={handleChange} value={criteria.batteryLife}>
+                            <select name="Battery Life (hours)" onChange={handleChange} value={criteria['Battery Life (hours)']}>
                                 <option value="">Chọn</option>
                                 <option value="Below 10h">Dưới 10h</option>
                                 <option value="10-15h">10-15h</option>
@@ -340,7 +350,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Tương thích thiết bị:</label><br />
-                            <select name="deviceCompatibility" onChange={handleChange} value={criteria.deviceCompatibility}>
+                            <select name="Device Compatibility" onChange={handleChange} value={criteria['Device Compatibility']}>
                                 <option value="">Chọn</option>
                                 <option value="Phone">Phone</option>
                                 <option value="Small camera">Small camera</option>
@@ -349,7 +359,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Tính năng đặc biệt:</label><br />
-                            {['Time-lapse', 'Follow mode', 'App Connectivity'].map((feature) => (
+                            {['Time-lapse', 'Follow Mode', 'App Connectivity'].map((feature) => (
                                 <label key={feature} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -384,7 +394,7 @@ const CriteriaSelection = () => {
                     <>
                         <div>
                             <label>Trọng lượng:</label><br />
-                            <select name="weight" onChange={handleChange} value={criteria.weight}>
+                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
                                 <option value="">Chọn</option>
                                 <option value="Light">Nhẹ (&lt;150g)</option>
                                 <option value="Medium">Trung bình (150-200g)</option>
@@ -393,7 +403,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Khả năng quay video:</label><br />
-                            <select name="videoRecordingCapabilities" onChange={handleChange} value={criteria.videoRecordingCapabilities}>
+                            <select name="Video Recording Capabilities" onChange={handleChange} value={criteria['Video Recording Capabilities']}>
                                 <option value="">Chọn</option>
                                 <option value="4K/60fps">4K/60fps</option>
                                 <option value="4K/120fps">4K/120fps</option>
@@ -402,7 +412,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Thời lượng pin (phút):</label><br />
-                            <select name="batteryLife" onChange={handleChange} value={criteria.batteryLife}>
+                            <select name="Battery Life (minutes)" onChange={handleChange} value={criteria['Battery Life (minutes)']}>
                                 <option value="">Chọn</option>
                                 <option value="Below 100 minutes">Dưới 100 phút</option>
                                 <option value="100-150 minutes">100-150 phút</option>
@@ -411,7 +421,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Tính năng đặc biệt:</label><br />
-                            {['Time-lapse', 'Slow motion', 'Water resistance', 'Shock resistance'].map((feature) => (
+                            {['Time-lapse', 'Slow Motion', 'Water Resistance', 'Shock Resistance'].map((feature) => (
                                 <label key={feature} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"
@@ -426,7 +436,7 @@ const CriteriaSelection = () => {
                         </div>
                         <div>
                             <label>Mục đích sử dụng:</label><br />
-                            {['Travel', 'Sports', 'Vlogging','Durability','Easy of use', 'Low-light performance'].map((purpose) => (
+                            {['Travel', 'Sports', 'Vlogging','Durability','Easy of use', 'Low-light Performance'].map((purpose) => (
                                 <label key={purpose} style={{ marginRight: '10px' }}>
                                     <input
                                         type="checkbox"

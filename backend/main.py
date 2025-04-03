@@ -13,11 +13,11 @@ app = FastAPI()
 
 # Danh sách purposes hợp lệ cho từng category
 PURPOSES_PER_CATEGORY = {
-    'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily use', 'Travel', 'Vlogging', 'Studio'],
+    'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging', 'Studio'],
     'lenses': ['Landscape', 'Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'],
     'drones': ['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'],
     'gimbals': ['Travel', 'Vlogging', 'Professional', 'Easy of use'],
-    'action_cameras': ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light performance']
+    'action_cameras': ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light Performance']
 }
 # Cấu hình CORS
 app.add_middleware(
@@ -171,12 +171,12 @@ def load_data():
 
             # Mã hóa các cột Yes/No
             yes_no_cols = [
-                "Quay 4K", "Flipscreen", "WiFi", "USB-C", "Image Stabilization (OIS)", 
+                "4K Video", "Flipscreen", "WiFi", "USB-C", "Image Stabilization (OIS)", 
                 "Film Simulation", "External Mic Input", "Bluetooth", "IBIS", 
-                "Weathersealing", "Optical viewfinder", "Electronic viewfinder (EVF)", 
-                "OIS", "Tracking", "Orbit mode", "Vertical Video Recording",
-                "Time-lapse", "Slow motion", "Water resistance", "Shock Resistance", 
-                "Follow mode", "App Connectivity", "Touchscreen", "Dual screen", 
+                "Weathersealing", "Optical Viewfinder", "Electronic Viewfinder (EVF)", 
+                "OIS", "Tracking", "Orbit Mode", "Vertical Video Recording",
+                "Time-lapse", "Slow Motion", "Water Resistance", "Shock Resistance", 
+                "Follow Mode", "App Connectivity", "Touchscreen", "Dual Screen", 
                 "Auto Rotation"
             ]
             for col in yes_no_cols:
@@ -187,7 +187,7 @@ def load_data():
             numeric_cols = [
                 "Weight (gram)", "Resolution (MP)", "ISO Min", "ISO Max", 
                 "Burst Shooting (fps)", "Battery Life (frames)", "Focal Length (mm)", 
-                "Max Aperture", "Minimum Focusing Distance (mm)", "Max flight time (minutes)", 
+                "Max Aperture", "Minimum Focusing Distance (mm)", "Max Flight Time (minutes)", 
                 "Control Range (km)", "Battery Capability (mAh)", "Maximum Flight Speed (km/h)", 
                 "Maximum Payload (kg)", "Battery Life (hours)", "Battery Life (minutes)", 
                 "Number of Stabilization Axes"
@@ -246,8 +246,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # 4K Video
         if '4K Video' in criteria:
-            df = df[df['Quay 4K'] == (1 if criteria['4K Video'] == 'Yes' else 0)]
-
+            df = df[df['4K Video'] == criteria['4K Video']]
+        
         # ISO Max
         if 'ISO Max' in criteria:
             iso_map = {
@@ -270,9 +270,9 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # Viewfinder
         if 'Optical Viewfinder' in criteria:
-            df = df[df['Optical viewfinder'] == (1 if criteria['Optical Viewfinder'] == 'Yes' else 0)]
-        if 'Electronic Viewfinder' in criteria:
-            df = df[df['Electronic viewfinder (EVF)'] == (1 if criteria['Electronic Viewfinder'] == 'Yes' else 0)]
+            df = df[df['Optical Viewfinder'] == (1 if criteria['Optical Viewfinder'] == 'Yes' else 0)]
+        if 'Electronic Viewfinder (EVF)' in criteria:
+            df = df[df['Electronic Viewfinder (EVF)'] == (1 if criteria['Electronic Viewfinder (EVF)'] == 'Yes' else 0)]
 
         # Special Features
         special_features = {
@@ -330,6 +330,10 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Camera Resolution
         if 'Camera Resolution' in criteria:
             df = df[df['Camera Resolution'] == criteria['Camera Resolution']]
+        
+        # Frames per sec
+        if 'Frames Per Sec' in criteria:
+            df = df[df['Frames Per Sec'] == criteria['Frames Per Sec']]
 
         # Obstacle Avoidance Sensor
         if 'Obstacle Avoidance Sensor' in criteria:
@@ -340,32 +344,33 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
             elif sensor_criteria == 'No':
                 # Giữ lại các hàng mà 'Obstacle Avoidance sensor' là 'No'
                 df = df[df['Obstacle Avoidance sensor'] == 'No']
+        
         # Maximum Flight Speed
-        if 'Maximum Flight Speed' in criteria:
+        if 'Maximum Flight Speed (km/h)' in criteria:
             speed_map = {
                 'Low': (None, 60),
                 'Medium': (60, 70),
                 'High': (70, None)
             }
-            min_speed, max_speed = speed_map[criteria['Maximum Flight Speed']]
+            min_speed, max_speed = speed_map[criteria['Maximum Flight Speed (km/h)']]
             if min_speed: df = df[df['Maximum Flight Speed (km/h)'] >= min_speed]
             if max_speed: df = df[df['Maximum Flight Speed (km/h)'] <= max_speed]
 
         # Control Range
-        if 'Control Range' in criteria:
+        if 'Control Range (km)' in criteria:
             range_map = {
                 'Short': (None, 6),
                 'Medium': (6, 10),
                 'Long': (10, None)
             }
-            min_range, max_range = range_map[criteria['Control Range']]
+            min_range, max_range = range_map[criteria['Control Range (km)']]
             if min_range: df = df[df['Control Range (km)'] >= min_range]
             if max_range: df = df[df['Control Range (km)'] <= max_range]
 
         # Special Features
         special_features = {
             'Tracking': 'Tracking',
-            'Orbit mode': 'Orbit mode',
+            'Orbit Mode': 'Orbit Mode',
             'Vertical Video Recording': 'Vertical Video Recording'
         }
         for feature, col in special_features.items():
@@ -374,24 +379,24 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
     elif category == 'gimbals':
         # Maximum Payload
-        if 'Maximum Payload' in criteria:
+        if 'Maximum Payload (kg)' in criteria:
             payload_map = {
                 '<= 0.3kg': (None, 0.3),
                 '0.3-2kg': (0.3, 2),
                 'Above 2kg': (2, None)
             }
-            min_payload, max_payload = payload_map[criteria['Maximum Payload']]
+            min_payload, max_payload = payload_map[criteria['Maximum Payload (kg)']]
             if min_payload: df = df[df['Maximum Payload (kg)'] >= min_payload]
             if max_payload: df = df[df['Maximum Payload (kg)'] <= max_payload]
 
         # Battery Life
-        if 'Battery Life' in criteria:
+        if 'Battery Life (hours)' in criteria:
             battery_map = {
                 'Below 10h': (None, 10),
                 '10-15h': (10, 15),
                 'Above 15h': (15, None)
             }
-            min_battery, max_battery = battery_map[criteria['Battery Life']]
+            min_battery, max_battery = battery_map[criteria['Battery Life (hours)']]
             if min_battery: df = df[df['Battery Life (hours)'] >= min_battery]
             if max_battery: df = df[df['Battery Life (hours)'] <= max_battery]
 
@@ -402,7 +407,7 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Special Features
         special_features = {
             'Time-lapse': 'Time-lapse',
-            'Follow mode': 'Follow mode',
+            'Follow Mode': 'Follow Mode',
             'App Connectivity': 'App Connectivity'
         }
         for feature, col in special_features.items():
@@ -423,25 +428,26 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
 
         # Video Recording Capabilities
         if 'Video Recording Capabilities' in criteria:
-            df = df[df['Video Recording Capabilities'] == criteria['Video Recording Capabilities']]
+            selected_capability = criteria['Video Recording Capabilities']
+            df = df[df['Video Recording Capabilities'].str.contains(selected_capability, na=False)]
 
         # Battery Life
-        if 'Battery Life' in criteria:
+        if 'Battery Life (minutes)' in criteria:
             battery_map = {
                 'Below 100 minutes': (None, 100),
                 '100-150 minutes': (100, 150),
                 'Above 150 minutes': (150, None)
             }
-            min_battery, max_battery = battery_map[criteria['Battery Life']]
+            min_battery, max_battery = battery_map[criteria['Battery Life (minutes)']]
             if min_battery: df = df[df['Battery Life (minutes)'] >= min_battery]
             if max_battery: df = df[df['Battery Life (minutes)'] <= max_battery]
 
         # Special Features
         special_features = {
             'Time-lapse': 'Time-lapse',
-            'Slow motion': 'Slow motion',
-            'Water resistance': 'Water resistance',
-            'Shock resistance': 'Shock Resistance'
+            'Slow Motion': 'Slow Motion',
+            'Water Resistance': 'Water Resistance',
+            'Shock Resistance': 'Shock Resistance'
         }
         for feature, col in special_features.items():
             if feature in criteria and criteria[feature]:
