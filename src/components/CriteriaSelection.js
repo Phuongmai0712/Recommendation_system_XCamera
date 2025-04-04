@@ -113,9 +113,8 @@ const CriteriaSelection = () => {
                             <label>ISO tối đa:</label><br />
                             <select name="ISO Max" onChange={handleChange} value={criteria['ISO Max']}>
                                 <option value="">Chọn</option>
-                                <option value="Low">Thấp (&lt;6400, sáng tốt)</option>
-                                <option value="Medium">Trung bình (6400-12800, linh hoạt)</option>
-                                <option value="High">Cao (&gt;12800, chụp đêm)</option>
+                                <option value="General">Thông thường (6400-12800, linh hoạt)</option>
+                                <option value="High">Cao (chụp đêm)</option>
                             </select>
                         </div>
                         <div>
@@ -199,9 +198,9 @@ const CriteriaSelection = () => {
                             <label>Khẩu độ tối đa:</label><br />
                             <select name="Max Aperture" onChange={handleChange} value={criteria['Max Aperture']}>
                                 <option value="">Chọn</option>
-                                <option value="Wide">Rộng (&lt;f/2.8, chụp đêm, bokeh)</option>
-                                <option value="Medium">Trung bình (f/2.8-f/4, đa dụng)</option>
-                                <option value="Narrow">Hẹp (&gt;f/4, phong cảnh)</option>
+                                <option value="Wide">Rộng (f/1.0-f/1.8, chân dung, chụp đêm, bokeh)</option>
+                                <option value="Medium">Trung bình (f/2-f/2.8, đa dụng)</option>
+                                <option value="Narrow">Hẹp (f/3.5-f/5.6, phong cảnh)</option>
                             </select>
                         </div>
                         <div>
@@ -238,16 +237,14 @@ const CriteriaSelection = () => {
                                 <option value="">Chọn</option>
                                 <option value="Light">Nhẹ (&lt;250g)</option>
                                 <option value="Medium">Trung bình (250-900g)</option>
-                                <option value="Heavy">Nặng (&gt;900g)</option>
                             </select>
                         </div>
                         <div>
                             <label>Thời gian bay tối đa (phút):</label><br />
                             <select name="Max Flight Time" onChange={handleChange} value={criteria['Max Flight Time']}>
                                 <option value="">Chọn</option>
-                                <option value="Below 20 minutes">Dưới 20 phút</option>
-                                <option value="20-30 minutes">20-30 phút</option>
-                                <option value="Above 30 minutes">Trên 30 phút</option>
+                                <option value="General">Trung bình (20-30 phút)</option>
+                                <option value="Long">Lâu (trên 30 phút)</option>
                             </select>
                         </div>
                         <div>
@@ -281,18 +278,19 @@ const CriteriaSelection = () => {
                             <label>Tốc độ bay tối đa:</label><br />
                             <select name="Maximum Flight Speed (km/h)" onChange={handleChange} value={criteria['Maximum Flight Speed (km/h)}']}>
                                 <option value="">Chọn</option>
-                                <option value="Low">Thấp (&lt;60 km/h, quay chậm)</option>
-                                <option value="Medium">Trung bình (60-70 km/h, đa dụng)</option>
-                                <option value="High">Cao (&gt;70 km/h, thể thao)</option>
+                                <option value="Slow">Chậm (Dưới 36 km/h, phù hợp người mới)</option>
+                                <option value="Moderate">Trung bình (36-54 km/h, dùng cơ bản)</option>
+                                <option value="Fast">Nhanh (54-70 km/h, cân bằng tốc độ và độ ổn định)</option>
+                                <option value="Very Fast">Rất nhanh (Trên 70 km/h, thể thao, tốc độ cao)</option>
                             </select>
                         </div>
                         <div>
                             <label>Khoảng cách điều khiển:</label><br />
                             <select name="Control Range (km)" onChange={handleChange} value={criteria['Control Range (km)']}>
                                 <option value="">Chọn</option>
-                                <option value="Short">Ngắn (&lt;6 km, quay gần)</option>
-                                <option value="Medium">Trung bình (6-10 km, du lịch)</option>
-                                <option value="Long">Xa (&gt;10 km, chuyên nghiệp)</option>
+                                <option value="Short">Ngắn (Dưới 10 km, quay gần)</option>
+                                <option value="Medium">Trung bình (10-15 km, du lịch)</option>
+                                <option value="Long">Xa (Trên 15 km, chuyên nghiệp)</option>
                             </select>
                         </div>
                         <div>
@@ -334,9 +332,9 @@ const CriteriaSelection = () => {
                             <label>Khả năng tải tối đa (kg):</label><br />
                             <select name="Maximum Payload (kg)" onChange={handleChange} value={criteria['Maximum Payload (kg)']}>
                                 <option value="">Chọn</option>
-                                <option value="<= 0.3kg">&lt;= 0.3kg (Smartphone)</option>
-                                <option value="0.3-2kg">0.3-2kg (Small camera)</option>
-                                <option value="Above 2kg">&gt;2kg (Full-frame camera)</option>
+                                <option value="0.3kg">&lt;0.3kg (Smartphone)</option>
+                                <option value="0.3-2kg">2kg (Small camera)</option>
+                                <option value="Above 2kg">3-4.5kg (Full-frame camera)</option>
                             </select>
                         </div>
                         <div>
@@ -344,17 +342,16 @@ const CriteriaSelection = () => {
                             <select name="Battery Life (hours)" onChange={handleChange} value={criteria['Battery Life (hours)']}>
                                 <option value="">Chọn</option>
                                 <option value="Below 10h">Dưới 10h</option>
-                                <option value="10-15h">10-15h</option>
-                                <option value="Above 15h">Trên 15h</option>
+                                <option value="Above 10h">Trên 10h</option>
                             </select>
                         </div>
                         <div>
                             <label>Tương thích thiết bị:</label><br />
                             <select name="Device Compatibility" onChange={handleChange} value={criteria['Device Compatibility']}>
                                 <option value="">Chọn</option>
-                                <option value="Phone">Phone</option>
-                                <option value="Small camera">Small camera</option>
-                                <option value="Full-frame camera">Full-frame camera</option>
+                                <option value="phone">Phone</option>
+                                <option value="small camera">Small camera</option>
+                                <option value="full-frame camera">Full-frame camera</option>
                             </select>
                         </div>
                         <div>
@@ -396,9 +393,8 @@ const CriteriaSelection = () => {
                             <label>Trọng lượng:</label><br />
                             <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
                                 <option value="">Chọn</option>
-                                <option value="Light">Nhẹ (&lt;150g)</option>
-                                <option value="Medium">Trung bình (150-200g)</option>
-                                <option value="Heavy">Nặng (&gt;200g)</option>
+                                <option value="Light">Nhẹ (Dưới 100g)</option>
+                                <option value="Medium">Trung bình (100-200g)</option>
                             </select>
                         </div>
                         <div>

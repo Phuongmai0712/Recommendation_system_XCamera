@@ -131,27 +131,27 @@ TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.
 
         # Drones (giữ nguyên dữ liệu của bạn)
         drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy Of Use
-DJI Flip,249,25,4,4K,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
-DJI Mini 3,249,38,10,4K,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
-DJI Mini 4 Pro,249,34,10,4K,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,60,Yes,0.8,0.6,0.88,0.85,0.65,0.85
-DJI Air 3S,720,46,12,4K,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.88,0.78,0.7,0.8,0.85,0.75
-DJI Neo,300,30,6,4K,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,55,Yes,0.6,0.3,0.8,0.72,0.3,0.9
-DJI Avata 2,410,20,10,4K,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,60,No,0.72,0.85,0.5,0.6,0.55,0.65
-DJI Mini 4K,249,30,4,4K,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.68,0.35,0.8,0.7,0.4,0.82
-DJI Mavic 3 Pro,895,43,15,5.1K,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.92,0.88,0.65,0.78,0.95,0.7
-DJI Air 2S,595,31,12,5.4K,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
-DJI Mavic 3 Classic,895,46,15,5.1K,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,75,No,0.88,0.82,0.68,0.72,0.9,0.7"""
+DJI Flip,249,25,13,4K,30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
+DJI Mini 3,249,38,10,4K,30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
+DJI Mini 4 Pro,249,30,20,4K,60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,58,Yes,0.8,0.6,0.88,0.85,0.65,0.85
+DJI Air 3S,720,46,20,4K,120fps,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,76,No,0.88,0.78,0.7,0.8,0.85,0.75
+DJI Neo,300,30,6,4K,30fps,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,28,Yes,0.6,0.3,0.8,0.72,0.3,0.9
+DJI Avata 2,410,21,10,4K,60fps,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,97,No,0.72,0.85,0.5,0.6,0.55,0.65
+DJI Mini 4K,249,30,10,4K,30fps,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,54,Yes,0.68,0.35,0.8,0.7,0.4,0.82
+DJI Mavic 3 Pro,895,43,15,5.1K,50fps,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,0.92,0.88,0.65,0.78,0.95,0.7
+DJI Air 2S,595,31,12,5.4K,30fps,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
+DJI Mavic 3 Classic,895,46,15,5.1K,50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,0.88,0.82,0.68,0.72,0.9,0.7"""
         specs_dfs['drones'] = pd.read_csv((StringIO(drones_data)))
 
         # Gimbals (giữ nguyên dữ liệu của bạn)
         gimbals_data = """Model,Maximum Payload (kg),Battery Life (hours),Number of Stabilization Axes,Device Compatibility,Time-lapse,Follow Mode,App Connectivity,Folded Size (mm),Stability,Travel,Vlogging,Professional,Easy Of Use
-Osmo Mobile 7,0.3,15,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.9,0.88,0.92,0.55,0.88
-Osmo Mobile 6,0.3,15,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.85,0.85,0.88,0.5,0.82
-Osmo Mobile SE,0.3,15,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.8,0.82,0.82,0.45,0.85
+Osmo Mobile 7,0.3,10,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.9,0.88,0.92,0.55,0.88
+Osmo Mobile 6,0.3,6,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.85,0.85,0.88,0.5,0.82
+Osmo Mobile SE,0.3,8,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.8,0.82,0.82,0.45,0.85
 RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340 x 250 x 70,0.78,0.7,0.75,0.8,0.75
-RS4 Pro,4.5,12,3,"full-frame, big camera",Yes,Yes,Yes,340 x 250 x 70,0.95,0.5,0.65,0.98,0.7
-RS4,3,12,3,"full-frame, medium camera",Yes,Yes,Yes,340 x 250 x 70,0.92,0.55,0.68,0.95,0.72
-RS3 Pro,4.5,12,3,"full-frame, big camera",Yes,Yes,Yes,340 x 250 x 70,0.93,0.52,0.66,0.96,0.71"""
+RS4 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.95,0.5,0.65,0.98,0.7
+RS4,3,11,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.92,0.55,0.68,0.95,0.72
+RS3 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.93,0.52,0.66,0.96,0.71"""
         specs_dfs['gimbals'] = pd.read_csv(StringIO(gimbals_data))
 
         # Action Cameras (giữ nguyên dữ liệu của bạn)
@@ -161,7 +161,7 @@ Osmo Pocket 2,117,4K/60fps,Yes,Yes,124 x 35 x 30,140,Yes,No,Yes,Yes,Yes,No,No,0.
 Osmo Action 5,145,"5.3K/60fps, 4K/120fps",Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,20m,0.85,0.75,0.9,0.78,0.95,0.8,0.9
 Osmo Action 4,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,18m,0.82,0.72,0.88,0.75,0.92,0.78,0.88
 Osmo Action 3,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,16m,0.8,0.7,0.85,0.7,0.9,0.75,0.8
-Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
+Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
         specs_dfs['action_cameras'] = pd.read_csv(StringIO(action_cameras_data))
 
 
@@ -269,12 +269,11 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # ISO Max
         if 'ISO Max' in criteria:
             iso_map = {
-                'Low': (None, 6400),
-                'Medium': (6400, 12800),
+                'General': (None, 12800),
                 'High': (12800, None)
             }
             min_iso, max_iso = iso_map[criteria['ISO Max']]
-            if min_iso: df = df[df['ISO Max'] >= min_iso]
+            if min_iso: df = df[df['ISO Max'] > min_iso]
             if max_iso: df = df[df['ISO Max'] <= max_iso]
 
             df.to_csv(f'{category}_specs_log.csv', index=False)
@@ -312,9 +311,9 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Max Aperture
         if 'Max Aperture' in criteria:
             aperture_map = {
-                'Wide': (None, 2.8),
-                'Medium': (2.8, 4),
-                'Narrow': (4, None)
+                'Wide': (1.0, 1.8),
+                'Medium': (2, 2.8),
+                'Narrow': (3.5, 5.6)
             }
             min_ap, max_ap = aperture_map[criteria['Max Aperture']]
             if min_ap: df = df[df['Max Aperture'] >= min_ap]
@@ -331,22 +330,20 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         if 'Weight' in criteria:
             weight_map = {
                 'Light': (None, 250),
-                'Medium': (250, 900),
-                'Heavy': (900, None)
+                'Medium': (250, 900)
             }
             min_w, max_w = weight_map[criteria['Weight']]
             if min_w: df = df[df['Weight (gram)'] >= min_w]
-            if max_w: df = df[df['Weight (gram)'] <= max_w]
+            if max_w: df = df[df['Weight (gram)'] < max_w]
 
         # Max Flight Time
         if 'Max Flight Time' in criteria:
             flight_time_map = {
-                'Below 20 minutes': (None, 20),
-                '20-30 minutes': (20, 30),
-                'Above 30 minutes': (30, None)
+                'General': (20, 30),
+                'Long': (30, None)
             }
             min_ft, max_ft = flight_time_map[criteria['Max Flight Time']]
-            if min_ft: df = df[df['Max Flight Time (minutes)'] >= min_ft]
+            if min_ft: df = df[df['Max Flight Time (minutes)'] > min_ft]
             if max_ft: df = df[df['Max Flight Time (minutes)'] <= max_ft]
 
         # Camera Resolution
@@ -354,8 +351,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
             df = df[df['Camera Resolution'] == criteria['Camera Resolution']]
         
         # # Frames per sec
-        # if 'Frames Per Sec' in criteria:
-        #     df = df[df['Frames Per Sec'] == criteria['Frames Per Sec']]
+        if 'Frames Per Sec' in criteria:
+            df = df[df['Frames Per Sec'] == criteria['Frames Per Sec']]
 
         # Obstacle Avoidance Sensor
         if 'Obstacle Avoidance Sensor' in criteria:
@@ -370,9 +367,10 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Maximum Flight Speed
         if 'Maximum Flight Speed (km/h)' in criteria:
             speed_map = {
-                'Low': (None, 60),
-                'Medium': (60, 70),
-                'High': (70, None)
+                'Slow': (None, 36),
+                'Moderate': (36, 54),
+                'Fast': (54, 72),
+                'Very Fast': (72, None)
             }
             min_speed, max_speed = speed_map[criteria['Maximum Flight Speed (km/h)']]
             if min_speed: df = df[df['Maximum Flight Speed (km/h)'] >= min_speed]
@@ -381,9 +379,9 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Control Range
         if 'Control Range (km)' in criteria:
             range_map = {
-                'Short': (None, 6),
-                'Medium': (6, 10),
-                'Long': (10, None)
+                'Short': (None, 9),
+                'Medium': (10, 15),
+                'Long': (15, None)
             }
             min_range, max_range = range_map[criteria['Control Range (km)']]
             if min_range: df = df[df['Control Range (km)'] >= min_range]
@@ -410,15 +408,14 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
                 'Above 2kg': (2, None)
             }
             min_payload, max_payload = payload_map[criteria['Maximum Payload (kg)']]
-            if min_payload: df = df[df['Maximum Payload (kg)'] >= min_payload]
+            if min_payload: df = df[df['Maximum Payload (kg)'] > min_payload]
             if max_payload: df = df[df['Maximum Payload (kg)'] <= max_payload]
 
         # Battery Life
         if 'Battery Life (hours)' in criteria:
             battery_map = {
                 'Below 10h': (None, 10),
-                '10-15h': (10, 15),
-                'Above 15h': (15, None)
+                'Above 10h': (11, None)
             }
             min_battery, max_battery = battery_map[criteria['Battery Life (hours)']]
             if min_battery: df = df[df['Battery Life (hours)'] >= min_battery]
@@ -443,9 +440,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Weight
         if 'Weight' in criteria:
             weight_map = {
-                'Light': (None, 150),
-                'Medium': (150, 200),
-                'Heavy': (200, None)
+                'Light': (None, 100),
+                'Medium': (100,None)
             }
             min_w, max_w = weight_map[criteria['Weight']]
             if min_w: df = df[df['Weight (gram)'] >= min_w]
