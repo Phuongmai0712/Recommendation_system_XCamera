@@ -6,7 +6,6 @@ const CriteriaSelection = () => {
     const { category } = useParams();
     const navigate = useNavigate();
 
-    // Khởi tạo state với tất cả các tiêu chí có thể
     const [criteria, setCriteria] = useState({
         weight: '',
         designStyle: '',
@@ -31,10 +30,9 @@ const CriteriaSelection = () => {
         deviceCompatibility: '',
         videoRecordingCapabilities: '',
         purposes: [],
-        price: [0, 100000000] // Mặc định giá từ 0 đến 100,000,000 VND
+        price: [1000, 100000000]
     });
 
-    // Xử lý thay đổi cho dropdown và checkbox
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         if (type === 'checkbox') {
@@ -49,16 +47,59 @@ const CriteriaSelection = () => {
         }
     };
 
-    // Xử lý thay đổi giá
+
+    // const handlePriceChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setCriteria((prev) => ({
+    //         ...prev,
+    //         price: name === 'min_price' ? [parseInt(value) || 0, prev.price[1]] : [prev.price[0], parseInt(value) || 0]
+    //     }));
+    // };
+
+    const formatNumber = (num) => {
+        if (!num) return '';
+        const cleanNum = num.toString().replace(/\D/g, '').replace(/^0+/, '');
+        return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    const parseFormattedNumber = (str) => {
+        if (!str) return '';
+        return str.replace(/\D/g, '');
+    };
+
     const handlePriceChange = (e) => {
         const { name, value } = e.target;
+        const index = name === 'min_price' ? 0 : 1;
+
+        const parsedValue = parseFormattedNumber(value);
+
+        const newPrice = [...criteria.price];
+        newPrice[index] = parsedValue;
+
+        setCriteria({
+            ...criteria,
+            price: newPrice
+        });
+    };
+
+    const getDisplayValue = (index) => {
+        return formatNumber(criteria.price[index]);
+    };
+
+    const selectAll = (field, options) => {
         setCriteria((prev) => ({
             ...prev,
-            price: name === 'min_price' ? [parseInt(value) || 0, prev.price[1]] : [prev.price[0], parseInt(value) || 0]
+            [field]: [...options]
         }));
     };
 
-    // Gửi dữ liệu khi submit
+    const deselectAll = (field) => {
+        setCriteria((prev) => ({
+            ...prev,
+            [field]: []
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -69,426 +110,554 @@ const CriteriaSelection = () => {
         }
     };
 
-    // Render tiêu chí theo category
+    const CheckboxGroup = ({ title, name, options, labels }) => {
+        return (
+            <div className="criteria-group">
+                <label className="criteria-label">{title}:</label>
+                <div className="select-buttons">
+                    <button
+                        type="button"
+                        className="select-btn"
+                        onClick={() => selectAll(name, options)}
+                    >
+                        Chọn hết
+                    </button>
+                    <button
+                        type="button"
+                        className="select-btn"
+                        onClick={() => deselectAll(name)}
+                    >
+                        Bỏ chọn hết
+                    </button>
+                </div>
+                <div className="checkbox-container">
+                    {options.map((option, index) => (
+                        <label key={option} className="checkbox-label">
+                            <input
+                                type="checkbox"
+                                name={name}
+                                value={option}
+                                onChange={handleChange}
+                                checked={criteria[name].includes(option)}
+                            />
+                            <span>{labels ? labels[index] : option}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    const SelectField = ({ label, name, options, values, defaultOption = "Chọn" }) => {
+        return (
+            <div className="criteria-group">
+                <label className="criteria-label">{label}:</label>
+                <select
+                    name={name}
+                    onChange={handleChange}
+                    value={criteria[name]}
+                    className="select-input"
+                >
+                    <option value="">{defaultOption}</option>
+                    {options.map((option, index) => (
+                        <option key={option} value={values ? values[index] : option}>
+                            {option}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
+    };
+
     const renderCriteria = () => {
-        switch (category.toLowerCase()) {
+        switch (category.toLowerCase().trim()) {
             case 'cameras':
+                const cameraSpecialFeatures = ['Weathersealing', 'IBIS', 'USB-C'];
+                const cameraSpecialFeaturesLabels = ['Chống nước, bụi', 'Ổn định hình ảnh', 'USB-C'];
+                const cameraPurposes = ['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging', 'Studio'];
+
                 return (
                     <>
-                        <div>
-                            <label>Trọng lượng:</label><br />
-                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
-                                <option value="">Chọn</option>
-                                <option value="Light">Nhẹ (&lt;400g)</option>
-                                <option value="Medium">Trung bình (400-600g)</option>
-                                <option value="Heavy">Nặng (&gt;600g)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Kiểu dáng:</label><br />
-                            <select name="Design Style" onChange={handleChange} value={criteria['Design Style']}>
-                                <option value="">Chọn</option>
-                                <option value="mirrorless">Mirrorless</option>
-                                <option value="compact">Compact</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Độ phân giải (MP):</label><br />
-                            <select name="Resolution" onChange={handleChange} value={criteria['Resolution']}>
-                                <option value="">Chọn</option>
-                                <option value="Below 20MP">Dưới 20MP (nhu cầu cơ bản)</option>
-                                <option value="20-30MP">20-30MP (bán chuyên)</option>
-                                <option value="Above 30MP">Trên 30MP (chuyên nghiệp)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Quay video 4K:</label><br />
-                            <select name="4K Video" onChange={handleChange} value={criteria['4K Video']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>ISO tối đa:</label><br />
-                            <select name="ISO Max" onChange={handleChange} value={criteria['ISO Max']}>
-                                <option value="">Chọn</option>
-                                <option value="General">Thông thường (6400-12800, linh hoạt)</option>
-                                <option value="High">Cao (chụp đêm)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Màn hình lật:</label><br />
-                            <select name="Flipscreen" onChange={handleChange} value={criteria['Flipscreen']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                            {criteria.flipscreen === 'Yes' && (
-                                <div>
-                                    <label>Loại màn hình lật:</label><br />
-                                    <select name="Flipscreen type" onChange={handleChange} value={criteria['Flipscreen type']}>
-                                        <option value="">Chọn</option>
-                                        <option value="Tilt">Tilt (góc thấp)</option>
-                                        <option value="Full">Full (vlogging, selfie)</option>
-                                    </select>
-                                </div>
-                            )}
-                        </div>
-                        <div>
-                            <label>Kính ngắm quang học:</label><br />
-                            <select name="Optical Viewfinder" onChange={handleChange} value={criteria['Optical Viewfinder']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Kính ngắm điện tử:</label><br />
-                            <select name="Electronic Viewfinder (EVF)" onChange={handleChange} value={criteria['Electronic Viewfinder (EVF)']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tính năng đặc biệt:</label><br />
-                            {['Weathersealing', 'IBIS', 'USB-C'].map((feature) => (
-                                <label key={feature} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="specialFeatures"
-                                        value={feature}
-                                        onChange={handleChange}
-                                        checked={criteria.specialFeatures.includes(feature)}
-                                    />
-                                    {feature === 'Weathersealing' ? 'Chống nước, bụi' : feature === 'IBIS' ? 'Ổn định hình ảnh' : 'USB-C'}
-                                </label>
-                            ))}
-                        </div>
-                        <div>
-                            <label>Mục đích sử dụng:</label><br />
-                            {['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging','Studio'].map((purpose) => (
-                                <label key={purpose} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="purposes"
-                                        value={purpose}
-                                        onChange={handleChange}
-                                        checked={criteria.purposes.includes(purpose)}
-                                    />
-                                    {purpose}
-                                </label>
-                            ))}
-                        </div>
+                        <SelectField
+                            label="Trọng lượng"
+                            name="Weight"
+                            options={['Nhẹ (<400g)', 'Trung bình (400-600g)', 'Nặng (>600g)']}
+                            values={['Light', 'Medium', 'Heavy']}
+                        />
+
+                        <SelectField
+                            label="Kiểu dáng"
+                            name="Design Style"
+                            options={['Mirrorless', 'Compact']}
+                            values={['mirrorless', 'compact']}
+                        />
+
+                        <SelectField
+                            label="Độ phân giải (MP)"
+                            name="Resolution"
+                            options={['Dưới 20MP (nhu cầu cơ bản)', '20-30MP (bán chuyên)', 'Trên 30MP (chuyên nghiệp)']}
+                            values={['Below 20MP', '20-30MP', 'Above 30MP']}
+                        />
+
+                        <SelectField
+                            label="Quay video 4K"
+                            name="4K Video"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        <SelectField
+                            label="ISO tối đa"
+                            name="ISO Max"
+                            options={['Thông thường (6400-12800, linh hoạt)', 'Cao (chụp đêm)']}
+                            values={['General', 'High']}
+                        />
+
+                        <SelectField
+                            label="Màn hình lật"
+                            name="Flipscreen"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        {criteria.flipscreen === 'Yes' && (
+                            <SelectField
+                                label="Loại màn hình lật"
+                                name="Flipscreen type"
+                                options={['Tilt (góc thấp)', 'Full (vlogging, selfie)']}
+                                values={['Tilt', 'Full']}
+                            />
+                        )}
+
+                        <SelectField
+                            label="Kính ngắm quang học"
+                            name="Optical Viewfinder"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        <SelectField
+                            label="Kính ngắm điện tử"
+                            name="Electronic Viewfinder (EVF)"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        <CheckboxGroup
+                            title="Tính năng đặc biệt"
+                            name="specialFeatures"
+                            options={cameraSpecialFeatures}
+                            labels={cameraSpecialFeaturesLabels}
+                        />
+
+                        <CheckboxGroup
+                            title="Mục đích sử dụng"
+                            name="purposes"
+                            options={cameraPurposes}
+                        />
                     </>
                 );
+
             case 'lenses':
+                const lensPurposes = ['Landscape', 'Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'];
+
                 return (
                     <>
-                        <div>
-                            <label>Loại ống kính:</label><br />
-                            <select name="Lens Type" onChange={handleChange} value={criteria['Lens Type']}>
-                                <option value="">Chọn</option>
-                                <option value="Fixed">Prime</option>
-                                <option value="Zoom">Zoom</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Khẩu độ tối đa:</label><br />
-                            <select name="Max Aperture" onChange={handleChange} value={criteria['Max Aperture']}>
-                                <option value="">Chọn</option>
-                                <option value="Wide">Rộng (f/1.0-f/1.8, chân dung, chụp đêm, bokeh)</option>
-                                <option value="Medium">Trung bình (f/2-f/2.8, đa dụng)</option>
-                                <option value="Narrow">Hẹp (f/3.5-f/5.6, phong cảnh)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Chống rung quang học (OIS):</label><br />
-                            <select name="OIS" onChange={handleChange} value={criteria['OIS']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Mục đích sử dụng:</label><br />
-                            {['Landscape','Travel', 'Portrait', 'Sports', 'Macro', 'Street', 'Video'].map((purpose) => (
-                                <label key={purpose} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="purposes"
-                                        value={purpose}
-                                        onChange={handleChange}
-                                        checked={criteria.purposes.includes(purpose)}
-                                    />
-                                    {purpose}
-                                </label>
-                            ))}
-                        </div>
+                        <SelectField
+                            label="Loại ống kính"
+                            name="Lens Type"
+                            options={['Prime', 'Zoom']}
+                            values={['Fixed', 'Zoom']}
+                        />
+
+                        <SelectField
+                            label="Khẩu độ tối đa"
+                            name="Max Aperture"
+                            options={[
+                                'Rộng (f/1.0-f/1.8, chân dung, chụp đêm, bokeh)',
+                                'Trung bình (f/2-f/2.8, đa dụng)',
+                                'Hẹp (f/3.5-f/5.6, phong cảnh)'
+                            ]}
+                            values={['Wide', 'Medium', 'Narrow']}
+                        />
+
+                        <SelectField
+                            label="Chống rung quang học (OIS)"
+                            name="OIS"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        <CheckboxGroup
+                            title="Mục đích sử dụng"
+                            name="purposes"
+                            options={lensPurposes}
+                        />
                     </>
                 );
+
             case 'drones':
+                const droneSpecialFeatures = ['Tracking', 'Orbit Mode', 'Vertical Video Recording'];
+                const dronePurposes = ['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'];
+
                 return (
                     <>
-                        <div>
-                            <label>Trọng lượng:</label><br />
-                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
-                                <option value="">Chọn</option>
-                                <option value="Light">Nhẹ (&lt;250g)</option>
-                                <option value="Medium">Trung bình (250-900g)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Thời gian bay tối đa (phút):</label><br />
-                            <select name="Max Flight Time" onChange={handleChange} value={criteria['Max Flight Time']}>
-                                <option value="">Chọn</option>
-                                <option value="General">Trung bình (20-30 phút)</option>
-                                <option value="Long">Lâu (trên 30 phút)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Độ phân giải camera:</label><br />
-                            <select name="Camera Resolution" onChange={handleChange} value={criteria["Camera Resolution"]}>
-                                <option value="">Chọn</option>
-                                <option value="4K">4K</option>
-                                <option value="5.1K">5.1K</option>
-                                <option value="5.4K">5.4K</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Khung hình mỗi giây:</label><br />
-                            <select name="Frames Per Sec" onChange={handleChange} value={criteria['Frames Per Sec']}>
-                                <option value="">Chọn</option>
-                                <option value="30fps">30fps</option>
-                                <option value="50fps">50fps</option>
-                                <option value="60fps">60fps</option>
-                                <option value="120fps">120fps</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Cảm biến tránh vật cản:</label><br />
-                            <select name="Obstacle Avoidance Sensor" onChange={handleChange} value={criteria['Obstacle Avoidance Sensor']}>
-                                <option value="">Chọn</option>
-                                <option value="Yes">Có</option>
-                                <option value="No">Không</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tốc độ bay tối đa:</label><br />
-                            <select name="Maximum Flight Speed (km/h)" onChange={handleChange} value={criteria['Maximum Flight Speed (km/h)}']}>
-                                <option value="">Chọn</option>
-                                <option value="Slow">Chậm (Dưới 36 km/h, phù hợp người mới)</option>
-                                <option value="Moderate">Trung bình (36-54 km/h, dùng cơ bản)</option>
-                                <option value="Fast">Nhanh (54-70 km/h, cân bằng tốc độ và độ ổn định)</option>
-                                <option value="Very Fast">Rất nhanh (Trên 70 km/h, thể thao, tốc độ cao)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Khoảng cách điều khiển:</label><br />
-                            <select name="Control Range (km)" onChange={handleChange} value={criteria['Control Range (km)']}>
-                                <option value="">Chọn</option>
-                                <option value="Short">Ngắn (Dưới 10 km, quay gần)</option>
-                                <option value="Medium">Trung bình (10-15 km, du lịch)</option>
-                                <option value="Long">Xa (Trên 15 km, chuyên nghiệp)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tính năng đặc biệt:</label><br />
-                            {['Tracking', 'Orbit Mode', 'Vertical Video Recording'].map((feature) => (
-                                <label key={feature} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="specialFeatures"
-                                        value={feature}
-                                        onChange={handleChange}
-                                        checked={criteria.specialFeatures.includes(feature)}
-                                    />
-                                    {feature}
-                                </label>
-                            ))}
-                        </div>
-                        <div>
-                            <label>Mục đích sử dụng:</label><br />
-                            {['Sports', 'Travel', 'Vlogging', 'Professional', 'Easy of use'].map((purpose) => (
-                                <label key={purpose} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="purposes"
-                                        value={purpose}
-                                        onChange={handleChange}
-                                        checked={criteria.purposes.includes(purpose)}
-                                    />
-                                    {purpose}
-                                </label>
-                            ))}
-                        </div>
+                        <SelectField
+                            label="Trọng lượng"
+                            name="Weight"
+                            options={['Nhẹ (<250g)', 'Trung bình (250-900g)']}
+                            values={['Light', 'Medium']}
+                        />
+
+                        <SelectField
+                            label="Thời gian bay tối đa (phút)"
+                            name="Max Flight Time"
+                            options={['Trung bình (20-30 phút)', 'Lâu (trên 30 phút)']}
+                            values={['General', 'Long']}
+                        />
+
+                        <SelectField
+                            label="Độ phân giải camera"
+                            name="Camera Resolution"
+                            options={['4K', '5.1K', '5.4K']}
+                        />
+
+                        <SelectField
+                            label="Khung hình mỗi giây"
+                            name="Frames Per Sec"
+                            options={['30fps', '50fps', '60fps', '120fps']}
+                        />
+
+                        <SelectField
+                            label="Cảm biến tránh vật cản"
+                            name="Obstacle Avoidance Sensor"
+                            options={['Có', 'Không']}
+                            values={['Yes', 'No']}
+                        />
+
+                        <SelectField
+                            label="Tốc độ bay tối đa"
+                            name="Maximum Flight Speed (km/h)"
+                            options={[
+                                'Chậm (Dưới 36 km/h, phù hợp người mới)',
+                                'Trung bình (36-54 km/h, dùng cơ bản)',
+                                'Nhanh (54-70 km/h, cân bằng tốc độ và độ ổn định)',
+                                'Rất nhanh (Trên 70 km/h, thể thao, tốc độ cao)'
+                            ]}
+                            values={['Slow', 'Moderate', 'Fast', 'Very Fast']}
+                        />
+
+                        <SelectField
+                            label="Khoảng cách điều khiển"
+                            name="Control Range (km)"
+                            options={[
+                                'Ngắn (Dưới 10 km, quay gần)',
+                                'Trung bình (10-15 km, du lịch)',
+                                'Xa (Trên 15 km, chuyên nghiệp)'
+                            ]}
+                            values={['Short', 'Medium', 'Long']}
+                        />
+
+                        <CheckboxGroup
+                            title="Tính năng đặc biệt"
+                            name="specialFeatures"
+                            options={droneSpecialFeatures}
+                        />
+
+                        <CheckboxGroup
+                            title="Mục đích sử dụng"
+                            name="purposes"
+                            options={dronePurposes}
+                        />
                     </>
                 );
+
             case 'gimbals':
+                const gimbalSpecialFeatures = ['Time-lapse', 'Follow Mode', 'App Connectivity'];
+                const gimbalPurposes = ['Travel', 'Vlogging', 'Professional', 'Easy of use'];
+
                 return (
                     <>
-                        <div>
-                            <label>Khả năng tải tối đa (kg):</label><br />
-                            <select name="Maximum Payload (kg)" onChange={handleChange} value={criteria['Maximum Payload (kg)']}>
-                                <option value="">Chọn</option>
-                                <option value="0.3kg">&lt;0.3kg (Smartphone)</option>
-                                <option value="0.3-2kg">2kg (Small camera)</option>
-                                <option value="Above 2kg">3-4.5kg (Full-frame camera)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Thời lượng pin (giờ):</label><br />
-                            <select name="Battery Life (hours)" onChange={handleChange} value={criteria['Battery Life (hours)']}>
-                                <option value="">Chọn</option>
-                                <option value="Below 10h">Dưới 10h</option>
-                                <option value="Above 10h">Trên 10h</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tương thích thiết bị:</label><br />
-                            <select name="Device Compatibility" onChange={handleChange} value={criteria['Device Compatibility']}>
-                                <option value="">Chọn</option>
-                                <option value="phone">Phone</option>
-                                <option value="small camera">Small camera</option>
-                                <option value="full-frame camera">Full-frame camera</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tính năng đặc biệt:</label><br />
-                            {['Time-lapse', 'Follow Mode', 'App Connectivity'].map((feature) => (
-                                <label key={feature} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="specialFeatures"
-                                        value={feature}
-                                        onChange={handleChange}
-                                        checked={criteria.specialFeatures.includes(feature)}
-                                    />
-                                    {feature}
-                                </label>
-                            ))}
-                        </div>
-                        <div>
-                            <label>Mục đích sử dụng:</label><br />
-                            {['Travel', 'Vlogging', 'Professional', 'Easy of use'].map((purpose) => (
-                                <label key={purpose} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="purposes"
-                                        value={purpose}
-                                        onChange={handleChange}
-                                        checked={criteria.purposes.includes(purpose)}
-                                    />
-                                    {purpose}
-                                </label>
-                            ))}
-                        </div>
+                        <SelectField
+                            label="Khả năng tải tối đa (kg)"
+                            name="Maximum Payload (kg)"
+                            options={[
+                                '<0.3kg (Smartphone)',
+                                '2kg (Small camera)',
+                                '3-4.5kg (Full-frame camera)'
+                            ]}
+                            values={['0.3kg', '0.3-2kg', 'Above 2kg']}
+                        />
+
+                        <SelectField
+                            label="Thời lượng pin (giờ)"
+                            name="Battery Life (hours)"
+                            options={['Dưới 10h', 'Trên 10h']}
+                            values={['Below 10h', 'Above 10h']}
+                        />
+
+                        <SelectField
+                            label="Tương thích thiết bị"
+                            name="Device Compatibility"
+                            options={['Phone', 'Small camera', 'Full-frame camera']}
+                            values={['phone', 'small camera', 'full-frame camera']}
+                        />
+
+                        <CheckboxGroup
+                            title="Tính năng đặc biệt"
+                            name="specialFeatures"
+                            options={gimbalSpecialFeatures}
+                        />
+
+                        <CheckboxGroup
+                            title="Mục đích sử dụng"
+                            name="purposes"
+                            options={gimbalPurposes}
+                        />
                     </>
                 );
+
             case 'action_cameras':
+                const actionCamSpecialFeatures = ['Time-lapse', 'Slow Motion', 'Water Resistance', 'Shock Resistance'];
+                const actionCamPurposes = ['Travel', 'Sports', 'Vlogging', 'Durability', 'Easy of use', 'Low-light Performance'];
+
                 return (
                     <>
-                        <div>
-                            <label>Trọng lượng:</label><br />
-                            <select name="Weight" onChange={handleChange} value={criteria['Weight']}>
-                                <option value="">Chọn</option>
-                                <option value="Light">Nhẹ (Dưới 100g)</option>
-                                <option value="Medium">Trung bình (100-200g)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Khả năng quay video:</label><br />
-                            <select name="Video Recording Capabilities" onChange={handleChange} value={criteria['Video Recording Capabilities']}>
-                                <option value="">Chọn</option>
-                                <option value="4K/60fps">4K/60fps</option>
-                                <option value="4K/120fps">4K/120fps</option>
-                                <option value="5.3K/60fps">5.3K/60fps</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Thời lượng pin (phút):</label><br />
-                            <select name="Battery Life (minutes)" onChange={handleChange} value={criteria['Battery Life (minutes)']}>
-                                <option value="">Chọn</option>
-                                <option value="Below 100 minutes">Dưới 100 phút</option>
-                                <option value="100-150 minutes">100-150 phút</option>
-                                <option value="Above 150 minutes">Trên 150 phút</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tính năng đặc biệt:</label><br />
-                            {['Time-lapse', 'Slow Motion', 'Water Resistance', 'Shock Resistance'].map((feature) => (
-                                <label key={feature} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="specialFeatures"
-                                        value={feature}
-                                        onChange={handleChange}
-                                        checked={criteria.specialFeatures.includes(feature)}
-                                    />
-                                    {feature}
-                                </label>
-                            ))}
-                        </div>
-                        <div>
-                            <label>Mục đích sử dụng:</label><br />
-                            {['Travel', 'Sports', 'Vlogging','Durability','Easy of use', 'Low-light Performance'].map((purpose) => (
-                                <label key={purpose} style={{ marginRight: '10px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="purposes"
-                                        value={purpose}
-                                        onChange={handleChange}
-                                        checked={criteria.purposes.includes(purpose)}
-                                    />
-                                    {purpose}
-                                </label>
-                            ))}
-                        </div>
+                        <SelectField
+                            label="Trọng lượng"
+                            name="Weight"
+                            options={['Nhẹ (Dưới 100g)', 'Trung bình (100-200g)']}
+                            values={['Light', 'Medium']}
+                        />
+
+                        <SelectField
+                            label="Khả năng quay video"
+                            name="Video Recording Capabilities"
+                            options={['4K/60fps', '4K/120fps', '5.3K/60fps']}
+                        />
+
+                        <SelectField
+                            label="Thời lượng pin (phút)"
+                            name="Battery Life (minutes)"
+                            options={[
+                                'Dưới 100 phút',
+                                '100-150 phút',
+                                'Trên 150 phút'
+                            ]}
+                            values={['Below 100 minutes', '100-150 minutes', 'Above 150 minutes']}
+                        />
+
+                        <CheckboxGroup
+                            title="Tính năng đặc biệt"
+                            name="specialFeatures"
+                            options={actionCamSpecialFeatures}
+                        />
+
+                        <CheckboxGroup
+                            title="Mục đích sử dụng"
+                            name="purposes"
+                            options={actionCamPurposes}
+                        />
                     </>
                 );
+
             default:
-                return <p>Category không hợp lệ</p>;
+                return <p className="error-message">Category không hợp lệ</p>;
         }
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <h1>Chọn Tiêu Chí cho {category}</h1>
-            <form onSubmit={handleSubmit}>
+        <div className="criteria-container">
+            <h1 className="criteria-title">Chọn tiêu chí cho {category == "action_cameras" ? "action cameras" : category.toLowerCase()}</h1>
+            <form onSubmit={handleSubmit} className="criteria-form">
                 {renderCriteria()}
-                <div style={{ marginTop: '10px' }}>
-                    <label>Khoảng giá (VND):</label><br />
-                    <input
-                        type="number"
-                        name="min_price"
-                        value={criteria.price[0]}
-                        onChange={handlePriceChange}
-                        placeholder="Giá tối thiểu"
-                        style={{ marginRight: '10px' }}
-                    />
-                    <input
-                        type="number"
-                        name="max_price"
-                        value={criteria.price[1]}
-                        onChange={handlePriceChange}
-                        placeholder="Giá tối đa"
-                    />
+
+                <div className="price-range">
+                    <label className="criteria-label">Khoảng giá (VND):</label>
+                    <div className="price-inputs">
+                        <input
+                            type="text"
+                            name="min_price"
+                            value={getDisplayValue(0)}
+                            onChange={handlePriceChange}
+                            placeholder="Giá tối thiểu"
+                            className="price-input"
+                        />
+                        <span className="price-separator">-</span>
+                        <input
+                            type="text"
+                            name="max_price"
+                            value={getDisplayValue(1)}
+                            onChange={handlePriceChange}
+                            placeholder="Giá tối đa"
+                            className="price-input"
+                        />
+                    </div>
                 </div>
-                <button
-                    type="submit"
-                    style={{
-                        marginTop: '20px',
-                        padding: '10px 20px',
-                        backgroundColor: '#4CAF50',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px'
-                    }}
-                >
+
+                <button type="submit" className="submit-button">
                     Xem Gợi Ý
                 </button>
             </form>
+
+            <style jsx>{`
+                .criteria-container {
+                    padding: 30px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                }
+                
+                .criteria-title {
+                    text-align: center;
+                    color: #333;
+                    margin-bottom: 30px;
+                    font-size: 28px;
+                }
+                
+                .criteria-form {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    gap: 20px;
+                }
+                
+                .criteria-group {
+                    margin-bottom: 15px;
+                    padding: 10px;
+                    border-radius: 8px;
+                    background-color: #f9f9f9;
+                }
+                
+                .criteria-label {
+                    display: block;
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                    color: #444;
+                }
+                
+                .select-input {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    background-color: white;
+                    font-size: 14px;
+                }
+                
+                .checkbox-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-top: 10px;
+                }
+                
+                .checkbox-label {
+                    display: flex;
+                    align-items: center;
+                    margin-right: 10px;
+                    cursor: pointer;
+                    padding: 5px 10px;
+                    background-color: #f0f0f0;
+                    border-radius: 30px;
+                    transition: all 0.2s;
+                }
+                
+                .checkbox-label:hover {
+                    background-color: #e0e0e0;
+                }
+                
+                .checkbox-label input {
+                    margin-right: 5px;
+                }
+                
+                .checkbox-label input:checked + span {
+                    font-weight: bold;
+                    color: dodgerblue;
+                }
+                
+                .select-buttons {
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                }
+                
+                .select-btn {
+                    padding: 5px 10px;
+                    background-color: #e7e7e7;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    transition: background-color 0.3s;
+                }
+                
+                .select-btn:hover {
+                    background-color: #d7d7d7;
+                }
+                
+                .price-range {
+                    grid-column: 1 / -1;
+                    margin-top: 10px;
+                    padding: 15px;
+                    background-color: #f9f9f9;
+                    border-radius: 8px;
+                }
+                
+                .price-inputs {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                
+                .price-input {
+                    flex: 1;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                
+                .price-separator {
+                    font-weight: bold;
+                    color: #555;
+                }
+                
+                .submit-button {
+                    grid-column: 1 / -1;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background-color: dodgerblue;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                
+                .submit-button:hover {
+                    background-color: dodgerblue;
+                }
+                
+                .error-message {
+                    color: #f44336;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                
+                @media (max-width: 768px) {
+                    .criteria-form {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    .criteria-container {
+                        padding: 20px;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

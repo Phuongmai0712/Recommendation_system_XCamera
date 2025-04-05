@@ -130,7 +130,7 @@ TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.
         specs_dfs['lenses'] = pd.read_csv(StringIO(lenses_data))
 
         # Drones (giữ nguyên dữ liệu của bạn)
-        drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy Of Use
+        drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Frames Per Sec, Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy Of Use
 DJI Flip,249,25,13,4K,30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
 DJI Mini 3,249,38,10,4K,30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
 DJI Mini 4 Pro,249,30,20,4K,60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,58,Yes,0.8,0.6,0.88,0.85,0.65,0.85
@@ -163,10 +163,11 @@ Osmo Action 4,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Y
 Osmo Action 3,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,16m,0.8,0.7,0.85,0.7,0.9,0.75,0.8
 Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
         specs_dfs['action_cameras'] = pd.read_csv(StringIO(action_cameras_data))
-
+        
 
         # 3. Tiền xử lý dữ liệu cho từng danh mục
         for category, specs_df in specs_dfs.items():
+
             specs_df['Model'] = specs_df['Model'].str.strip().str.lower()
 
             # Mã hóa các cột Yes/No
@@ -208,9 +209,7 @@ Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.7
             specs_df['Colour'] = specs_df['Colour'].fillna('black').str.lower()
 
             specs_dfs[category] = specs_df
-
-            # specs_df.to_csv(f'{category}_specs_log.csv', index=False)
-
+           # specs_df.to_csv(f'{category}_specs_log.csv', index=False)
         return specs_dfs
 
     except Exception as e:
@@ -357,12 +356,13 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Obstacle Avoidance Sensor
         if 'Obstacle Avoidance Sensor' in criteria:
             sensor_criteria = criteria['Obstacle Avoidance Sensor']
-            if sensor_criteria == 'Yes':
-                # Giữ lại các hàng mà 'Obstacle Avoidance sensor' không phải là 'No'
-                df = df[df['Obstacle Avoidance Sensor'] != 'No']
-            elif sensor_criteria == 'No':
-                # Giữ lại các hàng mà 'Obstacle Avoidance sensor' là 'No'
-                df = df[df['Obstacle Avoidance Sensor'] == 'No']
+            
+            if 'Obstacle Avoidance Sensor' in df.columns:
+                if sensor_criteria == 'Yes':
+                    df = df[df['Obstacle Avoidance Sensor'].str.strip().str.lower() != 'no']
+                elif sensor_criteria == 'No':
+                    df = df[df['Obstacle Avoidance Sensor'].str.strip().str.lower() == 'no']
+
         
         # Maximum Flight Speed
         if 'Maximum Flight Speed (km/h)' in criteria:
@@ -403,13 +403,21 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         # Maximum Payload
         if 'Maximum Payload (kg)' in criteria:
             payload_map = {
-                '<= 0.3kg': (None, 0.3),
+                '0.3kg': (None, 0.3),
                 '0.3-2kg': (0.3, 2),
                 'Above 2kg': (2, None)
             }
-            min_payload, max_payload = payload_map[criteria['Maximum Payload (kg)']]
-            if min_payload: df = df[df['Maximum Payload (kg)'] > min_payload]
-            if max_payload: df = df[df['Maximum Payload (kg)'] <= max_payload]
+            
+            if criteria['Maximum Payload (kg)'] in payload_map:
+                min_payload, max_payload = payload_map[criteria['Maximum Payload (kg)']]
+                
+                if 'Maximum Payload (kg)' in df.columns:
+                    df['Maximum Payload (kg)'] = pd.to_numeric(df['Maximum Payload (kg)'], errors='coerce')
+
+                    if min_payload is not None:
+                        df = df[df['Maximum Payload (kg)'] > min_payload]
+                    if max_payload is not None:
+                        df = df[df['Maximum Payload (kg)'] <= max_payload]
 
         # Battery Life
         if 'Battery Life (hours)' in criteria:
@@ -476,8 +484,15 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
                 df = df[df[col] == 1]
 
     # Lọc giá
-    min_price = criteria.get('min_price', 0)
-    max_price = criteria.get('max_price', df['Price'].max())
+    price_range = criteria.get('price')
+    if isinstance(price_range, list) and len(price_range) == 2:
+        min_price, max_price = price_range
+    else:
+        min_price, max_price = df['Price'].min(), df['Price'].max()
+    
+    min_price = int(price_range[0])
+    max_price = int(price_range[1])
+
     df = df[(df['Price'] >= min_price) & (df['Price'] <= max_price)]
 
     return df
@@ -501,23 +516,14 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
                 print(f"Warning: Column '{p}' is not numeric and will be ignored for scoring.")
     
     if not purposes_to_use:
-        print(f"No valid purpose columns found. Using default scoring method.")
-        for p in selected_purposes_lower:
-            if p in df_copy.columns:
-                print(f"Found column '{p}' but it may not be in valid_purposes or not numeric.")
-            else:
-                print(f"Column '{p}' not found in DataFrame.")
         
-        df_copy['score'] = 0.5  
+        df_copy['score'] = 0  
     else:
-        print(f"Using purposes for scoring: {purposes_to_use}")
         
         for purpose in purposes_to_use:
             value_counts = df_copy[purpose].value_counts().head(5)
-            print(f"Sample values for '{purpose}': {value_counts.to_dict()}")
             
             if df_copy[purpose].isna().any():
-                print(f"Replacing NaN values in '{purpose}' with 0")
                 df_copy[purpose] = df_copy[purpose].fillna(0)
         
         try:
@@ -538,7 +544,7 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
                         print(f"Column '{purpose}' contains only zeros.")
         except Exception as e:
             print(f"Error calculating scores: {e}")
-            df_copy['score'] = 0.5
+            df_copy['score'] = 0
     
     df_copy['score'] = df_copy['score'].fillna(0)
     
@@ -567,7 +573,7 @@ async def recommend(request: RecommendationRequest):
         # Sort and get top 3
         # scored_df = scored_df[scored_df['score'] >= 0.5]
         # print(scored_df)
-        top_3 = scored_df.sort_values('score', ascending=False).head(3)
+        top_3 = scored_df.sort_values('score', ascending=False)
         # print(top_3)
         if top_3.empty:
             return {'message': 'Không tìm thấy sản phẩm phù hợp'}
