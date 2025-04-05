@@ -201,6 +201,10 @@ const RecommendationResults = () => {
                     <p className="text-xs text-gray-500">Series</p>
                     <p className="font-medium text-gray-800">{selectedProduct.series}</p>
                   </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Explain</p>
+                    <p className="font-medium text-gray-800">{selectedProduct.model.toUpperCase() + " " + selectedProduct.explanation}</p>
+                  </div>
                   {selectedProduct.free_gift !== 'none' && (
                     <div>
                       <p className="text-xs text-gray-500">Quà tặng</p>
