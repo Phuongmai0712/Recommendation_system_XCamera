@@ -556,64 +556,9 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
         
     return df_copy
 
-# API endpoint
-@app.post("/recommend")
-async def recommend(request: RecommendationRequest):
-    try:
-        specs_dfs = load_data()
-        category = request.category.lower()
-        
-        if category not in specs_dfs:
-            raise HTTPException(status_code=400, detail="Invalid category")
-        
-        df = specs_dfs[category].copy()
-        
-        # Apply filters
-        filtered_df = apply_filters(df, category, request.criteria)
-        
-        # Calculate scores based on purposes
-        selected_purposes = request.criteria.get('purposes', [])
-        scored_df = calculate_scores(filtered_df, category, selected_purposes)
-        
-        # Sort and get top products
-        top_products = scored_df.sort_values('score', ascending=False)
-        
-        if top_products.empty:
-            return {'message': 'Không tìm thấy sản phẩm phù hợp'}
-        
-        # Format response
-        recommendations = []
-        for _, row in top_products.iterrows():
-            row = row.rename(str.lower)
-
-            # Get product details for prompt
-            product_model = row.get('model', 'unknown')
-            product_price = row.get('price', 'N/A')
-            product_details = {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
-            
-            # Generate explanation based on product features and purposes
-            explanation = generate_explanation(product_model, selected_purposes, product_details, product_price)
-            
-            rec = {
-                'model': product_model,
-                'price': product_price,
-                'score': round(row.get('score', 0), 2),
-                'colour': row.get('colour', 'black'),
-                'series': row.get('series', ''),
-                'condition': row.get('condition', 'unknown'),
-                'free_gift': row.get('free gift', 'none'),
-                'details': product_details,
-                'explanation': explanation  
-            }
-            recommendations.append(rec)
-
-        return {'recommendations': recommendations}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
 def generate_explanation(product_model, selected_purposes, features, price=None):    
     if not selected_purposes:
-        return f"{product_model} là sản phẩm phù hợp với các nhu cầu cơ bản của bạn."
+        return "là sản phẩm phù hợp với các nhu cầu cơ bản của bạn."
     
     criteria_map = {
         "Beginner": {"Price": "≤23000000", "Resolution": "16-24 MP", "Weight": "≤500g", "Flipscreen": "Yes"},
@@ -633,12 +578,9 @@ def generate_explanation(product_model, selected_purposes, features, price=None)
                   "USB-C": "Yes", "Weathersealing": "Yes"}
     }
     
-    for purpose in selected_purposes:
-        print(f"DEBUG - Criteria for {purpose}: {criteria_map.get(purpose, {})}")
-    
     feature_mapping = {
-        "resolution": "Resolution",
-        "weight": "Weight",
+        "resolution (mp)": "Resolution",
+        "weight (gram)": "Weight",
         "flipscreen": "Flipscreen",
         "iso max": "ISO Max",
         "autofocus type": "Autofocus Type",
@@ -663,7 +605,6 @@ def generate_explanation(product_model, selected_purposes, features, price=None)
     all_matching_features = {}
     
     for purpose in selected_purposes:
-        print(f"DEBUG - Processing purpose: {purpose}")
         selected_criteria = criteria_map.get(purpose, {})
         
         for criterion, expected_value in selected_criteria.items():
@@ -837,6 +778,61 @@ def generate_explanation(product_model, selected_purposes, features, price=None)
             explanation += general_multi_desc
     
     return explanation
+
+# API endpoint
+@app.post("/recommend")
+async def recommend(request: RecommendationRequest):
+    try:
+        specs_dfs = load_data()
+        category = request.category.lower()
+        
+        if category not in specs_dfs:
+            raise HTTPException(status_code=400, detail="Invalid category")
+        
+        df = specs_dfs[category].copy()
+        
+        # Apply filters
+        filtered_df = apply_filters(df, category, request.criteria)
+        
+        # Calculate scores based on purposes
+        selected_purposes = request.criteria.get('purposes', [])
+        scored_df = calculate_scores(filtered_df, category, selected_purposes)
+        
+        # Sort and get top products
+        top_products = scored_df.sort_values('score', ascending=False)
+        
+        if top_products.empty:
+            return {'message': 'Không tìm thấy sản phẩm phù hợp'}
+        
+        # Format response
+        recommendations = []
+        for _, row in top_products.iterrows():
+            row = row.rename(str.lower)
+
+            # Get product details for prompt
+            product_model = row.get('model', 'unknown')
+            product_price = row.get('price', 'N/A')
+            product_details = {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
+            
+            # add explaination
+            explanation = generate_explanation(product_model, selected_purposes, product_details, product_price)
+            
+            rec = {
+                'model': product_model,
+                'price': product_price,
+                'score': round(row.get('score', 0), 2),
+                'colour': row.get('colour', 'black'),
+                'series': row.get('series', ''),
+                'condition': row.get('condition', 'unknown'),
+                'free_gift': row.get('free gift', 'none'),
+                'details': product_details,
+                'explanation': explanation  
+            }
+            recommendations.append(rec)
+
+        return {'recommendations': recommendations}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
