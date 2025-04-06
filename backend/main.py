@@ -8,8 +8,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 from pydantic import BaseModel
 from io import StringIO 
 from typing import List, Optional, Dict, Any
+from openai import OpenAI
+import os
 
 app = FastAPI()
+client = OpenAI(
+    base_url="https://api.aimlapi.com/v1",
+    api_key="25ce94a4986f416a9b8e479ed280ff45",  
+)
 
 # Danh sách purposes hợp lệ cho từng category
 PURPOSES_PER_CATEGORY = {
@@ -281,8 +287,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         if 'Flipscreen' in criteria:
             if criteria['Flipscreen'] == 'Yes':
                 df = df[df['Flipscreen'] == 1]
-                if 'Flipscreen type' in criteria:
-                    df = df[df['Flipscreen type'] == criteria['Flipscreen type']]
+                if 'Flipscreen Type' in criteria:
+                    df = df[df['Flipscreen Type'] == criteria['Flipscreen Type']]
             else:
                 df = df[df['Flipscreen'] == 0]
 
@@ -547,7 +553,7 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
             df_copy['score'] = 0
     
     df_copy['score'] = df_copy['score'].fillna(0)
-    
+        
     return df_copy
 
 # API endpoint
@@ -555,7 +561,6 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
 async def recommend(request: RecommendationRequest):
     try:
         specs_dfs = load_data()
-        # print(specs_dfs)
         category = request.category.lower()
         
         if category not in specs_dfs:
@@ -565,42 +570,274 @@ async def recommend(request: RecommendationRequest):
         
         # Apply filters
         filtered_df = apply_filters(df, category, request.criteria)
-        # print(filtered_df)
+        
         # Calculate scores based on purposes
         selected_purposes = request.criteria.get('purposes', [])
         scored_df = calculate_scores(filtered_df, category, selected_purposes)
-        # print(scored_df)
-        # Sort and get top 3
-        # scored_df = scored_df[scored_df['score'] >= 0.5]
-        # print(scored_df)
-        top_3 = scored_df.sort_values('score', ascending=False)
-        # print(top_3)
-        if top_3.empty:
-            return {'message': 'Không tìm thấy sản phẩm phù hợp'}
+        
+        # Sort and get top products
+        top_products = scored_df.sort_values('score', ascending=False)
+        
+        if top_products.empty:
+            return {'message': 'Không tìm thấy sản phẩm phù hợp'}
+        
         # Format response
         recommendations = []
-        for _, row in top_3.iterrows():
+        for _, row in top_products.iterrows():
             row = row.rename(str.lower)
 
+            # Get product details for prompt
+            product_model = row.get('model', 'unknown')
+            product_price = row.get('price', 'N/A')
+            product_details = {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
+            
+            # Generate explanation based on product features and purposes
+            explanation = generate_explanation(product_model, selected_purposes, product_details, product_price)
+            
             rec = {
-                'model': row.get('model', 'unknown'),
-                'price': row.get('price', 'N/A'),
+                'model': product_model,
+                'price': product_price,
                 'score': round(row.get('score', 0), 2),
                 'colour': row.get('colour', 'black'),
                 'series': row.get('series', ''),
                 'condition': row.get('condition', 'unknown'),
                 'free_gift': row.get('free gift', 'none'),
-                'details': {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
+                'details': product_details,
+                'explanation': explanation  
             }
             recommendations.append(rec)
 
-        
         return {'recommendations': recommendations}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+def generate_explanation(product_model, selected_purposes, features, price=None):    
+    if not selected_purposes:
+        return f"{product_model} là sản phẩm phù hợp với các nhu cầu cơ bản của bạn."
     
-    except Exception as e: 
-        raise HTTPException(status_code=500, detail=str(e))
+    criteria_map = {
+        "Beginner": {"Price": "≤23000000", "Resolution": "16-24 MP", "Weight": "≤500g", "Flipscreen": "Yes"},
+        "Professional": {"Resolution": "≥26 MP", "ISO Max": "≥12800", "Autofocus Type": "Hybrid", 
+                        "Weathersealing": "Yes", "Burst Shooting": "≥10 fps"},
+        "Sports": {"Burst Shooting": "≥10 fps", "Autofocus Type": "Hybrid", 
+                  "Weathersealing": "Yes", "Battery Life": "≥400 frames"},
+        "Video": {"Quay 4K": "Yes", "External Mic Input": "Yes", "IBIS": "Yes", 
+                 "Flipscreen": "Yes", "Film Simulation": "Yes"},
+        "Daily use": {"Weight": "≤500g", "Battery Life": "≥300 frames", 
+                     "WiFi": "Yes", "Bluetooth": "Yes"},
+        "Travel": {"Weight": "≤500g", "Battery Life": "≥400 frames", 
+                  "Weathersealing": "Yes", "Film Simulation": "Yes"},
+        "Vlogging": {"Flipscreen": "Yes", "Weight": "≤500g", "External Mic Input": "Yes", 
+                    "Quay 4K": "Yes", "IBIS": "Yes"},
+        "Studio": {"Resolution": "≥26 MP", "Film Simulation": "Yes", 
+                  "USB-C": "Yes", "Weathersealing": "Yes"}
+    }
+    
+    for purpose in selected_purposes:
+        print(f"DEBUG - Criteria for {purpose}: {criteria_map.get(purpose, {})}")
+    
+    feature_mapping = {
+        "resolution": "Resolution",
+        "weight": "Weight",
+        "flipscreen": "Flipscreen",
+        "iso max": "ISO Max",
+        "autofocus type": "Autofocus Type",
+        "weathersealing": "Weathersealing",
+        "burst shooting": "Burst Shooting",
+        "battery life": "Battery Life",
+        "quay 4k": "Quay 4K",
+        "external mic input": "External Mic Input",
+        "ibis": "IBIS",
+        "film simulation": "Film Simulation",
+        "wifi": "WiFi",
+        "bluetooth": "Bluetooth",
+        "usb-c": "USB-C"
+    }
+    
+    normalized_features = {}
+    for key, value in features.items():
+        normalized_key = feature_mapping.get(key.lower(), key)
+        normalized_features[normalized_key] = value
+    
+    
+    all_matching_features = {}
+    
+    for purpose in selected_purposes:
+        print(f"DEBUG - Processing purpose: {purpose}")
+        selected_criteria = criteria_map.get(purpose, {})
+        
+        for criterion, expected_value in selected_criteria.items():
+            
+            if criterion in normalized_features:
+                actual_value = normalized_features[criterion]
+                
+                if criterion in all_matching_features:
+                    continue
+
+                if criterion == "Price" and price:
+                    try:
+                        price_value = float(price)
+                        threshold_str = expected_value.replace("≤", "").replace("USD", "").strip()
+                        
+                        threshold = float(threshold_str)
+                        
+                        if price_value <= threshold:
+                            all_matching_features[criterion] = price
+                    except Exception as e:
+                        print(f"DEBUG - Error processing price: {e}")
+                    continue
+                
+                if "≤" in expected_value:
+                    try:
+                        actual_num = float(actual_value)
+                        threshold = float(expected_value.replace("≤", "").replace("g", "").replace(" frames", "").strip())
+                        if actual_num <= threshold:
+                            all_matching_features[criterion] = actual_value
+                    except Exception as e:
+                        print(f"DEBUG - Error processing ≤ comparison: {e}")
+                    continue
+                
+                if "≥" in expected_value:
+                    try:
+                        actual_num = float(actual_value)
+                        threshold = float(expected_value.replace("≥", "").replace(" MP", "").replace(" fps", "").replace(" frames", "").strip())
+                        if actual_num >= threshold:
+                            all_matching_features[criterion] = actual_value
+                    except Exception as e:
+                        print(f"DEBUG - Error processing ≥ comparison: {e}")
+                    continue
+                
+                if expected_value == "Yes":
+                    if str(actual_value).lower() == "yes" or str(actual_value).lower() == "true" or str(actual_value) == "1":
+                        all_matching_features[criterion] = actual_value
+                    continue
+                
+                if criterion == "Resolution" and "MP" in str(actual_value):
+                    try:
+                        actual_mp = float(actual_value.replace("MP", "").strip())
+                        if "16-24" in expected_value and 16 <= actual_mp <= 24:
+                            all_matching_features[criterion] = actual_value
+                        elif "≥26" in expected_value and actual_mp >= 26:
+                            all_matching_features[criterion] = actual_value
+                    except Exception as e:
+                        print(f"DEBUG - Error processing Resolution: {e}")
+                    continue
+    
+    
+    explanation = ""
+    
+    if len(selected_purposes) == 1:
+        primary_purpose = selected_purposes[0]
+        adjective_map = {
+            "Beginner": "phù hợp cho người mới",
+            "Professional": "lý tưởng cho chuyên nghiệp",
+            "Sports": "hoàn hảo cho thể thao",
+            "Video": "tuyệt vời cho video",
+            "Daily use": "phù hợp dùng hàng ngày",
+            "Travel": "lý tưởng cho du lịch",
+            "Vlogging": "hoàn hảo cho vlogging",
+            "Studio": "phù hợp cho studio"
+        }
+        purpose_desc = adjective_map.get(primary_purpose, f"phù hợp cho {primary_purpose.lower()}")
+        explanation += purpose_desc
+    else:
+        purpose_descriptions = []
+        for purpose in selected_purposes:
+            purpose_desc_map = {
+                "Beginner": "người mới",
+                "Professional": "chuyên nghiệp",
+                "Sports": "thể thao",
+                "Video": "quay video",
+                "Daily use": "sử dụng hàng ngày",
+                "Travel": "du lịch",
+                "Vlogging": "vlogging",
+                "Studio": "studio"
+            }
+            purpose_descriptions.append(purpose_desc_map.get(purpose, purpose.lower()))
+        
+        if len(purpose_descriptions) > 1:
+            multi_purpose_desc = f"phù hợp cho {', '.join(purpose_descriptions[:-1])} và {purpose_descriptions[-1]}"
+            explanation += multi_purpose_desc
+        else:
+            explanation += f"phù hợp cho {purpose_descriptions[0]}"
+    
+    feature_descriptions = []
+    
+    if "Beginner" in selected_purposes and price < 23000000:
+        price_desc = f"giá {int(price)} đồng"
+        feature_descriptions.append(price_desc)
+
+    for criterion, actual_value in all_matching_features.items():
+        if criterion == "Price":
+            continue
+    
+    for criterion, actual_value in all_matching_features.items():
+        if criterion == "Price":
+            continue
+            
+        desc = None
+        if criterion == "Resolution":
+            desc = f"độ phân giải {actual_value}"
+        elif criterion == "Weight":
+            desc = f"trọng lượng {actual_value}g"
+        elif criterion == "Battery Life":
+            desc = f"pin {actual_value} khung hình"
+        elif criterion == "Burst Shooting":
+            desc = f"chụp liên tục {actual_value} fps"
+        elif criterion == "ISO Max":
+            desc = f"ISO tối đa {actual_value}"
+        elif criterion == "Weathersealing" and actual_value == 1:
+            desc = "chống chịu thời tiết"
+        elif criterion == "Autofocus Type" and str(actual_value).lower() == "hybrid":
+            desc = "lấy nét Hybrid"
+        elif criterion == "Flipscreen" and (actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "màn hình lật đầy đủ"
+        elif criterion == "Quay 4K" and (actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "quay 4K"
+        elif criterion == "External Mic Input" and(actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "có cổng mic ngoài"
+        elif criterion == "IBIS" and (actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "chống rung IBIS"
+        elif criterion == "Film Simulation" and(actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "có Film Simulation"
+        elif criterion == "WiFi" and(actual_value == 1 or str(actual_value).lower() == "yes"):
+            if "Bluetooth" in normalized_features and ((normalized_features["Bluetooth"]) == 1 or str(normalized_features["Bluetooth"]).lower() == "true"):
+                desc = "có WiFi/Bluetooth"
+            else:
+                desc = "có WiFi"
+        elif criterion == "USB-C" and(actual_value == 1 or str(actual_value).lower() == "yes"):
+            desc = "USB-C (hỗ trợ tethering)"
+        
+        if desc:
+            feature_descriptions.append(desc)    
+    
+    if len(feature_descriptions) > 1:
+        feature_text = " với " + ", ".join(feature_descriptions[:-1]) + ", và " + feature_descriptions[-1] + "."
+        explanation += feature_text
+    elif len(feature_descriptions) == 1:
+        feature_text = " với " + feature_descriptions[0] + "."
+        explanation += feature_text
+    else:
+        if len(selected_purposes) == 1:
+            primary_purpose = selected_purposes[0]
+            general_descriptions = {
+                "Beginner": "thiết kế dễ sử dụng phù hợp với người mới.",
+                "Professional": "chất lượng chuyên nghiệp đáp ứng yêu cầu cao.",
+                "Sports": "hiệu suất tối ưu cho chụp thể thao.",
+                "Video": "các tính năng chuyên biệt cho quay phim.",
+                "Daily use": "thiết kế tiện lợi cho sử dụng hàng ngày.",
+                "Travel": "kích thước nhỏ gọn lý tưởng cho du lịch.",
+                "Vlogging": "tính năng hoàn hảo cho người làm vlog.",
+                "Studio": "chất lượng hình ảnh cao cấp cho công việc studio."
+            }
+            general_desc = " với " + general_descriptions.get(primary_purpose, "các tính năng phù hợp với nhu cầu của bạn.")
+            explanation += general_desc
+        else:
+            general_multi_desc = " với nhiều tính năng phù hợp cho đa dạng nhu cầu của bạn."
+            explanation += general_multi_desc
+    
+    return explanation
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-    

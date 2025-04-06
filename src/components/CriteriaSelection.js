@@ -47,15 +47,6 @@ const CriteriaSelection = () => {
         }
     };
 
-
-    // const handlePriceChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setCriteria((prev) => ({
-    //         ...prev,
-    //         price: name === 'min_price' ? [parseInt(value) || 0, prev.price[1]] : [prev.price[0], parseInt(value) || 0]
-    //     }));
-    // };
-
     const formatNumber = (num) => {
         if (!num) return '';
         const cleanNum = num.toString().replace(/\D/g, '').replace(/^0+/, '');
@@ -169,6 +160,32 @@ const CriteriaSelection = () => {
         );
     };
 
+    const commonFields = () => {
+        return (
+            <>
+                <SelectField
+                    label="Tình trạng"
+                    name="Condition"
+                    options={['Mới', 'Đã qua sử dụng']}
+                    values={['New', 'Used']}
+                />
+            </>
+        );
+    };
+
+    const colorFields = () => {
+        return (
+            <>
+                <SelectField
+                    label="Màu sắc"
+                    name="Colour"
+                    options={['Đen', 'Bạc', 'Trắng', 'Xám', 'Khác']}
+                    values={['Black', 'Silver', 'White', 'Gray', 'Other']}
+                />
+            </>
+        );
+    };
+
     const renderCriteria = () => {
         switch (category.toLowerCase().trim()) {
             case 'cameras':
@@ -178,6 +195,9 @@ const CriteriaSelection = () => {
 
                 return (
                     <>
+                        {commonFields()}
+                        {colorFields()}
+                        
                         <SelectField
                             label="Trọng lượng"
                             name="Weight"
@@ -220,10 +240,10 @@ const CriteriaSelection = () => {
                             values={['Yes', 'No']}
                         />
 
-                        {criteria.flipscreen === 'Yes' && (
+                        {criteria.Flipscreen === 'Yes' && (
                             <SelectField
                                 label="Loại màn hình lật"
-                                name="Flipscreen type"
+                                name="Flipscreen Type"
                                 options={['Tilt (góc thấp)', 'Full (vlogging, selfie)']}
                                 values={['Tilt', 'Full']}
                             />
@@ -263,6 +283,9 @@ const CriteriaSelection = () => {
 
                 return (
                     <>
+                        {commonFields()}
+                        {colorFields()}
+                        
                         <SelectField
                             label="Loại ống kính"
                             name="Lens Type"
@@ -302,6 +325,8 @@ const CriteriaSelection = () => {
 
                 return (
                     <>
+                        {commonFields()}
+                        
                         <SelectField
                             label="Trọng lượng"
                             name="Weight"
@@ -378,6 +403,8 @@ const CriteriaSelection = () => {
 
                 return (
                     <>
+                        {commonFields()}
+                        
                         <SelectField
                             label="Khả năng tải tối đa (kg)"
                             name="Maximum Payload (kg)"
