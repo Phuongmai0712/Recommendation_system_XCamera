@@ -230,14 +230,14 @@ const CriteriaSelection = () => {
                         )}
 
                         <SelectField
-                            label="Kính ngắm quang học"
+                            label="Kính ngắm quang học (OVF)"
                             name="Optical Viewfinder"
                             options={['Có', 'Không']}
                             values={['Yes', 'No']}
                         />
 
                         <SelectField
-                            label="Kính ngắm điện tử"
+                            label="Kính ngắm điện tử (EVF)"
                             name="Electronic Viewfinder (EVF)"
                             options={['Có', 'Không']}
                             values={['Yes', 'No']}

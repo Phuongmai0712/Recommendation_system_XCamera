@@ -40,8 +40,8 @@ def load_data():
         pd.set_option('future.no_silent_downcasting', True)
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
-        # creds = ServiceAccountCredentials.from_json_keyfile_name("D:\\KLTN\\inventoryreader-454903-25f852b85ccf.json", scope)
+        # creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("D:\\KLTN\\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
         sheet = client.open_by_url(sheet_url)
@@ -61,13 +61,13 @@ def load_data():
     X-H2S,660,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,580,0.4,0.9,0.9,0.9,0.4,0.4,0.6,0.9
     X-H2,660,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,680,0.4,0.9,0.7,0.9,0.4,0.4,0.6,0.9
     X-T5,557,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Tilt,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,130x91x64,mirrorless,No,580,0.4,0.85,0.7,0.7,0.6,0.6,0.6,0.85
-    X100VI,521,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Tilt,Yes,Hybrid,8,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes (partial),2024,Fixed (35mm equiv.),128x75x55,compact,Yes,450,0.6,0.7,0.4,0.7,0.85,0.85,0.85,0.4
+    X100VI,521,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Tilt,Yes,Hybrid,8,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes (partial),2024,Fixed (35mm equiv.),128x75x55,compact,Yes,450,0.8,0.7,0.4,0.7,0.85,0.85,0.85,0.4
     X-S20,491,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,8,Yes,No,Yes,Yes,Yes,Yes,Yes,No,2023,Fujifilm X,127x85x65,mirrorless,No,750,0.85,0.7,0.4,0.85,0.85,0.85,0.85,0.4
     X-T50,438,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Tilt,Yes,Hybrid,10,Yes,No,Yes,Yes,Yes,Yes,Yes,No,2024,Fujifilm X,124x84x49,mirrorless,No,305,0.85,0.7,0.4,0.7,0.85,0.85,0.7,0.4
     X-T30 II,383,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,8,Yes,No,Yes,Yes,Yes,Yes,No,No,2021,Fujifilm X,118x83x47,mirrorless,No,380,0.85,0.4,0.4,0.4,0.85,0.85,0.6,0.4
     X-E4,364,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,8,Yes,No,Yes,Yes,Yes,Yes,No,No,2021,Fujifilm X,121x73x33,mirrorless,No,380,0.6,0.4,0.25,0.4,0.85,0.85,0.6,0.25
     X-Pro3,497,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,11,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,2019,Fujifilm X,141x83x46,mirrorless,Yes,400,0.4,0.85,0.4,0.4,0.6,0.6,0.4,0.7
-    X100V,478,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,11,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes (partial),2020,Fixed (35mm equiv.),128x75x53,compact,Yes,420,0.6,0.7,0.4,0.7,0.85,0.85,0.85,0.4
+    X100V,478,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,11,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes (partial),2020,Fixed (35mm equiv.),128x75x53,compact,Yes,420,0.8,0.7,0.4,0.7,0.85,0.85,0.85,0.4
     X-T4,607,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2020,Fujifilm X,135x93x84,mirrorless,No,500,0.4,0.85,0.7,0.85,0.6,0.6,0.85,0.85
     X-S10,465,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,8,Yes,No,Yes,Yes,Yes,Yes,Yes,No,2020,Fujifilm X,126x85x65,mirrorless,No,325,0.85,0.7,0.4,0.7,0.85,0.85,0.85,0.4
     X-T3,539,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Tilt,Yes,Hybrid,11,Yes,No,Yes,Yes,Yes,Yes,No,Yes,2018,Fujifilm X,133x93x59,mirrorless,No,390,0.4,0.7,0.7,0.7,0.6,0.6,0.6,0.7
