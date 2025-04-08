@@ -201,10 +201,12 @@ const RecommendationResults = () => {
                     <p className="text-xs text-gray-500">Series</p>
                     <p className="font-medium text-gray-800">{selectedProduct.series}</p>
                   </div>
+                  {selectedProduct.explanation && (
                   <div>
                     <p className="text-xs text-gray-500">Giải thích đề xuất</p>
                     <p className="font-medium text-gray-800">{selectedProduct.model.toUpperCase() + " " + selectedProduct.explanation}</p>
                   </div>
+                  )}
                   {selectedProduct.free_gift !== 'none' && (
                     <div>
                       <p className="text-xs text-gray-500">Quà tặng</p>

@@ -40,8 +40,8 @@ def load_data():
         pd.set_option('future.no_silent_downcasting', True)
         # 1. Tải bảng Inventory từ Google Sheets
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        # creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
-        creds = ServiceAccountCredentials.from_json_keyfile_name("D:\\KLTN\\inventoryreader-454903-25f852b85ccf.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("C:\\Users\\Admin\\Downloads\\inventoryreader-454903-25f852b85ccf.json", scope)
+        # creds = ServiceAccountCredentials.from_json_keyfile_name("D:\\KLTN\\inventoryreader-454903-25f852b85ccf.json", scope)
         client = gspread.authorize(creds)
         sheet_url = "https://docs.google.com/spreadsheets/d/1zDG2XgHJPbtanTS-KDB2gOsCUGBtFk92JJe5EuuN8BI/edit?gid=0#gid=0"
         sheet = client.open_by_url(sheet_url)
@@ -52,7 +52,7 @@ def load_data():
         inventory_df['Model'] = inventory_df['Model'].str.strip().str.lower()
         inventory_df['Colour'] = inventory_df['Colour'].str.strip().str.lower()
         inventory_df.dropna(subset=['Model'], inplace=True)
-        inventory_df.to_csv('inventory_log.csv', index=False)
+        # inventory_df.to_csv('inventory_log.csv', index=False)
         # 2. Tạo DataFrame từ dữ liệu
         specs_dfs = {}
 
@@ -521,7 +521,7 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
     else:
         
         for purpose in purposes_to_use:
-            value_counts = df_copy[purpose].value_counts().head(5)
+            # value_counts = df_copy[purpose].value_counts().head(5)
             
             if df_copy[purpose].isna().any():
                 df_copy[purpose] = df_copy[purpose].fillna(0)
@@ -535,10 +535,10 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
                 "mean": df_copy['score'].mean(),
                 "median": df_copy['score'].median()
             }
-            print(f"Score statistics: {score_stats}")
+            # print(f"Score statistics: {score_stats}")
             
             if df_copy['score'].max() == 0 and len(purposes_to_use) > 0:
-                print("Warning: All scores are 0. Check if purpose columns contain only zeros.")
+                # print("Warning: All scores are 0. Check if purpose columns contain only zeros.")
                 for purpose in purposes_to_use:
                     if df_copy[purpose].max() == 0:
                         print(f"Column '{purpose}' contains only zeros.")
@@ -810,7 +810,8 @@ async def recommend(request: RecommendationRequest):
             product_details = {col: row[col] for col in row.index if col not in ['model', 'price', 'score', 'colour', 'condition', 'series', 'free gift']}
             
             # add explaination
-            explanation = generate_explanation(product_model, selected_purposes, product_details, product_price)
+            if category == "cameras":
+                explanation = generate_explanation(product_model, selected_purposes, product_details, product_price)
             
             rec = {
                 'model': product_model,
@@ -821,7 +822,7 @@ async def recommend(request: RecommendationRequest):
                 'condition': row.get('condition', 'unknown'),
                 'free_gift': row.get('free gift', 'none'),
                 'details': product_details,
-                'explanation': explanation  
+                'explanation': explanation  if category == "cameras" else None
             }
             recommendations.append(rec)
 
