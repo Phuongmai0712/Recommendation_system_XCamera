@@ -8,15 +8,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from pydantic import BaseModel
 from io import StringIO 
 from typing import List, Optional, Dict, Any
-from openai import OpenAI
 import os
 
 app = FastAPI()
-client = OpenAI(
-    base_url="https://api.aimlapi.com/v1",
-    api_key="25ce94a4986f416a9b8e479ed280ff45",  
-)
-
 # Danh sách purposes hợp lệ cho từng category
 PURPOSES_PER_CATEGORY = {
     'cameras': ['Beginner', 'Professional', 'Sports', 'Video', 'Daily Use', 'Travel', 'Vlogging', 'Studio'],
@@ -62,7 +56,7 @@ def load_data():
         # 2. Tạo DataFrame từ dữ liệu
         specs_dfs = {}
 
-        # Cameras (giữ nguyên dữ liệu của bạn)
+        # Cameras 
         cameras_data = """Model,Weight (gram),Sensor Size,Resolution (MP),Quality 4K,ISO Min,ISO Max,Flipscreen,Flipscreen Type,Film Simulation,Autofocus Type,Burst Shooting (fps),External Mic Input,Optical Viewfinder,Electronic Viewfinder (EVF),USB-C,WiFi,Bluetooth,IBIS,Weathersealing,Release Year,Compatible Lens Type,Dimensions (mm),Design Style,Rangefinder-style,Battery Life (frames),Beginner,Professional,Sports,Video,Daily Use,Travel,Vlogging,Studio
     X-H2S,660,APS-C (23.5x15.6mm),26,Yes,80,51200,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,580,0.4,0.9,0.9,0.9,0.4,0.4,0.6,0.9
     X-H2,660,APS-C (23.5x15.6mm),40,Yes,125,12800,Yes,Full,Yes,Hybrid,15,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,2022,Fujifilm X,136x93x95,mirrorless,No,680,0.4,0.9,0.7,0.9,0.4,0.4,0.6,0.9
@@ -94,80 +88,80 @@ def load_data():
     X-Pro4,450,APS-C (23.5x15.6mm),40.2,Yes,160,12800,Yes,Full,Yes,Hybrid,15,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,2025,Fujifilm X,128 x 75 x 54,mirrorless,Yes,450,0.4,0.85,0.4,0.7,0.6,0.6,0.4,0.7"""
         specs_dfs['cameras'] = pd.read_csv(StringIO(cameras_data))
 
-        # Lenses (giữ nguyên dữ liệu của bạn)
-        lenses_data = """Model,Lens Type,Focal Length (mm),Max Aperture,Image Stabilization (OIS),Weight (gram),Filter Size (mm),Mount Type,Landscape,Travel,Portrait,Sports,Macro,Street,Video,Minimum Focusing Distance (mm)
-XF 8mm f/3.5 R WR,Fixed,8,3.5,No,215,62,X-mount,0.92,0.88,0.15,0.1,0.2,0.65,0.3,20
-XF 14mm f/2.8 R,Fixed,14,2.8,No,235,58,X-mount,0.88,0.82,0.2,0.15,0.25,0.7,0.35,18
-XF 16mm f/1.4 R WR,Fixed,16,1.4,No,375,67,X-mount,0.85,0.68,0.62,0.2,0.78,0.82,0.58,15
-XF 16mm f/2.8 R WR,Fixed,16,2.8,No,155,49,X-mount,0.82,0.9,0.22,0.15,0.2,0.85,0.28,17
-XF 18mm f/1.4 R LM WR,Fixed,18,1.4,No,370,62,X-mount,0.65,0.62,0.88,0.25,0.3,0.88,0.85,20
-XF 18mm f/2 R,Fixed,18,2,No,116,52,X-mount,0.6,0.92,0.28,0.15,0.25,0.9,0.2,18
-XF 23mm f/1.4 R LM WR,Fixed,23,1.4,No,375,62,X-mount,0.68,0.65,0.85,0.25,0.3,0.88,0.82,19
-XF 23mm f/2 R WR,Fixed,23,2,No,180,43,X-mount,0.62,0.88,0.58,0.2,0.25,0.85,0.3,22
-XF 27mm f/2.8 R WR,Fixed,27,2.8,No,84,39,X-mount,0.6,0.95,0.55,0.15,0.2,0.82,0.25,34
-XF 33mm f/1.4 R LM WR,Fixed,33,1.4,No,360,58,X-mount,0.65,0.6,0.9,0.25,0.3,0.88,0.85,30
-XF 35mm f/1.4 R,Fixed,35,1.4,No,187,52,X-mount,0.62,0.65,0.88,0.2,0.25,0.85,0.3,28
-XF 35mm f/2.0 R WR,Fixed,35,2,No,170,43,X-mount,0.6,0.88,0.6,0.2,0.25,0.82,0.28,35
-XC 35mm f/2,Fixed,35,2,No,130,43,X-mount,0.58,0.9,0.58,0.15,0.2,0.8,0.25,35
-XF 50mm f/2 R WR,Fixed,50,2,No,200,46,X-mount,0.3,0.62,0.82,0.3,0.25,0.65,0.3,39
-XF 56mm f/1.2 R WR,Fixed,56,1.2,No,445,62,X-mount,0.2,0.3,0.95,0.35,0.25,0.6,0.88,70
-XF 60mm f/2.4 Macro,Fixed,60,2.4,No,215,39,X-mount,0.2,0.25,0.8,0.25,0.95,0.3,0.2,26.7
-XF 90mm f/2 R LM WR,Fixed,90,2,No,540,62,X-mount,0.2,0.25,0.92,0.7,0.3,0.3,0.85,60
-XC 15-45mm f/3.5-5.6 OIS PZ,Zoom,15-45,3.5,Yes,135,52,X-mount,0.82,0.92,0.3,0.2,0.25,0.62,0.65,13
-XF 16-50mm f/2.8-4.8 R LM WR,Zoom,16-50,2.8,No,240,58,X-mount,0.85,0.88,0.65,0.3,0.25,0.65,0.82,30
-XF 16-55mm f/2.8 R LM WR,Zoom,16-55,2.8,No,655,77,X-mount,0.88,0.6,0.82,0.35,0.25,0.62,0.85,30
-XF 16-55mm f/2.8 R LM WR II,Zoom,16-55,2.8,No,410,77,X-mount,0.92,0.7,0.85,0.4,0.25,0.65,0.9,30
-XF 16-80mm f/4 R OIS WR,Zoom,16-80,4,Yes,440,72,X-mount,0.88,0.95,0.62,0.65,0.3,0.65,0.92,35
-XF 18-55mm f/2.8-4 R LM OIS,Zoom,18-55,2.8,Yes,310,58,X-mount,0.82,0.88,0.6,0.3,0.25,0.62,0.8,30
-XF 50-140mm f/2.8 R LM OIS WR,Zoom,50-140,2.8,Yes,995,72,X-mount,0.3,0.25,0.88,0.95,0.25,0.2,0.92,100
-XF 55-200mm f/3.5-4.8 R LM OIS,Zoom,55-200,3.5,Yes,580,62,X-mount,0.65,0.62,0.65,0.82,0.3,0.25,0.8,110
-XF 100-400mm f/4.5-5.6 R LM OIS,Zoom,100-400,4.5,Yes,1375,77,X-mount,0.68,0.3,0.2,0.98,0.25,0.2,0.85,175
-XF 200mm f/2 OIS WR,Fixed,200,2,Yes,2265,43,X-mount,0.25,0.2,0.85,0.98,0.25,0.15,0.95,180
-FX 500mm f/5.6 R LM OIS WR,Fixed,500,5.6,Yes,1375,77,X-mount,0.7,0.25,0.15,0.98,0.25,0.15,0.88,300
-GF 23mm f/4 R LM WR,Fixed,23,4,No,845,82,G-mount,0.95,0.6,0.2,0.15,0.25,0.65,0.62,38
-GF 30mm f/3.5 R WR,Fixed,30,3.5,No,510,62,G-mount,0.85,0.65,0.25,0.2,0.25,0.82,0.6,32
-GF 32-64mm f/4 R LM WR,Zoom,32-64,4,No,875,77,G-mount,0.92,0.8,0.62,0.3,0.25,0.65,0.82,50
-GF 100-200mm f/5.6 R LM OIS WR,Zoom,100-200,5.6,Yes,1050,72,G-mount,0.68,0.6,0.65,0.85,0.3,0.25,0.8,120
-Viltrox AF 23mm f/1.4 for Fujifilm,Fixed,23,1.4,No,320,52,X-mount,0.62,0.65,0.82,0.25,0.25,0.85,0.65,25
-TTArtisan 23mm f/1.8,Fixed,23,1.8,No,200,49,X-mount,0.6,0.68,0.58,0.2,0.25,0.82,0.2,20
-TTArtisan 27mm f/2.8,Fixed,27,2.8,No,100,39,X-mount,0.58,0.9,0.55,0.15,0.2,0.8,0.2,35
-TTArtisan 35mm f/1.8,Fixed,35,1.8,No,220,52,X-mount,0.6,0.65,0.82,0.25,0.25,0.85,0.62,35
-TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,0.2,0.3,0.8,0.3,0.25,0.62,0.6,50"""
+        # Lenses 
+        lenses_data = """Model,Lens Type,Focal Length (mm),Max Aperture,Image Stabilization (OIS),Weight (gram),Filter Size (mm),Mount Type,Release Year,Landscape,Travel,Portrait,Sports,Macro,Street,Video,Minimum Focusing Distance (mm)
+XF 8mm f/3.5 R WR,Fixed,8,3.5,No,215,62,X-mount,2023,0.92,0.88,0.15,0.1,0.2,0.65,0.3,20
+XF 14mm f/2.8 R,Fixed,14,2.8,No,235,58,X-mount,2012,0.88,0.82,0.2,0.15,0.25,0.7,0.35,18
+XF 16mm f/1.4 R WR,Fixed,16,1.4,No,375,67,X-mount,2015,0.85,0.68,0.62,0.2,0.78,0.82,0.58,15
+XF 16mm f/2.8 R WR,Fixed,16,2.8,No,155,49,X-mount,2019,0.82,0.9,0.22,0.15,0.2,0.85,0.28,17
+XF 18mm f/1.4 R LM WR,Fixed,18,1.4,No,370,62,X-mount,2021,0.65,0.62,0.88,0.25,0.3,0.88,0.85,20
+XF 18mm f/2 R,Fixed,18,2,No,116,52,X-mount,2012,0.6,0.92,0.28,0.15,0.25,0.9,0.2,18
+XF 23mm f/1.4 R LM WR,Fixed,23,1.4,No,375,62,X-mount,2021,0.68,0.65,0.85,0.25,0.3,0.88,0.82,19
+XF 23mm f/2 R WR,Fixed,23,2,No,180,43,X-mount,2016,0.62,0.88,0.58,0.2,0.25,0.85,0.3,22
+XF 27mm f/2.8 R WR,Fixed,27,2.8,No,84,39,X-mount,2021,0.6,0.95,0.55,0.15,0.2,0.82,0.25,34
+XF 33mm f/1.4 R LM WR,Fixed,33,1.4,No,360,58,X-mount,2021,0.65,0.6,0.9,0.25,0.3,0.88,0.85,30
+XF 35mm f/1.4 R,Fixed,35,1.4,No,187,52,X-mount,2012,0.62,0.65,0.88,0.2,0.25,0.85,0.3,28
+XF 35mm f/2.0 R WR,Fixed,35,2,No,170,43,X-mount,2015,0.6,0.88,0.6,0.2,0.25,0.82,0.28,35
+XC 35mm f/2,Fixed,35,2,No,130,43,X-mount,2020,0.58,0.9,0.58,0.15,0.2,0.8,0.25,35
+XF 50mm f/2 R WR,Fixed,50,2,No,200,46,X-mount,2017,0.3,0.62,0.82,0.3,0.25,0.65,0.3,39
+XF 56mm f/1.2 R WR,Fixed,56,1.2,No,445,62,X-mount,2022,0.2,0.3,0.95,0.35,0.25,0.6,0.88,70
+XF 60mm f/2.4 Macro,Fixed,60,2.4,No,215,39,X-mount,2012,0.2,0.25,0.8,0.25,0.95,0.3,0.2,26.7
+XF 90mm f/2 R LM WR,Fixed,90,2,No,540,62,X-mount,2015,0.2,0.25,0.92,0.7,0.3,0.3,0.85,60
+XC 15-45mm f/3.5-5.6 OIS PZ,Zoom,15-45,3.5,Yes,135,52,X-mount,2018,0.82,0.92,0.3,0.2,0.25,0.62,0.65,13
+XF 16-50mm f/2.8-4.8 R LM WR,Zoom,16-50,2.8,No,240,58,X-mount,2024,0.85,0.88,0.65,0.3,0.25,0.65,0.82,30
+XF 16-55mm f/2.8 R LM WR,Zoom,16-55,2.8,No,655,77,X-mount,2015,0.88,0.6,0.82,0.35,0.25,0.62,0.85,30
+XF 16-55mm f/2.8 R LM WR II,Zoom,16-55,2.8,No,410,77,X-mount,2024,0.92,0.7,0.85,0.4,0.25,0.65,0.9,30
+XF 16-80mm f/4 R OIS WR,Zoom,16-80,4,Yes,440,72,X-mount,2019,0.88,0.95,0.62,0.65,0.3,0.65,0.92,35
+XF 18-55mm f/2.8-4 R LM OIS,Zoom,18-55,2.8,Yes,310,58,X-mount,2012,0.82,0.88,0.6,0.3,0.25,0.62,0.8,30
+XF 50-140mm f/2.8 R LM OIS WR,Zoom,50-140,2.8,Yes,995,72,X-mount,2014,0.3,0.25,0.88,0.95,0.25,0.2,0.92,100
+XF 55-200mm f/3.5-4.8 R LM OIS,Zoom,55-200,3.5,Yes,580,62,X-mount,2013,0.65,0.62,0.65,0.82,0.3,0.25,0.8,110
+XF 100-400mm f/4.5-5.6 R LM OIS,Zoom,100-400,4.5,Yes,1375,77,X-mount,2016,0.68,0.3,0.2,0.98,0.25,0.2,0.85,175
+XF 200mm f/2 OIS WR,Fixed,200,2,Yes,2265,43,X-mount,2018,0.25,0.2,0.85,0.98,0.25,0.15,0.95,180
+XF 500mm f/5.6 R LM OIS WR,Fixed,500,5.6,Yes,1375,77,X-mount,2024,0.7,0.25,0.15,0.98,0.25,0.15,0.88,300
+GF 23mm f/4 R LM WR,Fixed,23,4,No,845,82,G-mount,2021,0.95,0.6,0.2,0.15,0.25,0.65,0.62,38
+GF 30mm f/3.5 R WR,Fixed,30,3.5,No,510,62,G-mount,2021,0.85,0.65,0.25,0.2,0.25,0.82,0.6,32
+GF 32-64mm f/4 R LM WR,Zoom,32-64,4,No,875,77,G-mount,2021,0.92,0.8,0.62,0.3,0.25,0.65,0.82,50
+GF 100-200mm f/5.6 R LM OIS WR,Zoom,100-200,5.6,Yes,1050,72,G-mount,2021,0.68,0.6,0.65,0.85,0.3,0.25,0.8,120
+Viltrox AF 23mm f/1.4 for Fujifilm,Fixed,23,1.4,No,320,52,X-mount,2020,0.62,0.65,0.82,0.25,0.25,0.85,0.65,25
+TTArtisan 23mm f/1.8,Fixed,23,1.8,No,200,49,X-mount,2025,0.6,0.68,0.58,0.2,0.25,0.82,0.2,20
+TTArtisan 27mm f/2.8,Fixed,27,2.8,No,100,39,X-mount,2023,0.58,0.9,0.55,0.15,0.2,0.8,0.2,35
+TTArtisan 35mm f/1.8,Fixed,35,1.8,No,220,52,X-mount,2023,0.6,0.65,0.82,0.25,0.25,0.85,0.62,35
+TTArtisan 56mm f/1.8,Fixed,56,1.8,No,300,52,X-mount,2024,0.2,0.3,0.8,0.3,0.25,0.62,0.6,50"""
         specs_dfs['lenses'] = pd.read_csv(StringIO(lenses_data))
 
-        # Drones (giữ nguyên dữ liệu của bạn)
-        drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Frames Per Sec, Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Stability,Sports,Travel,Vlogging,Professional,Easy Of Use
-DJI Flip,249,25,13,4K,30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,0.75,0.55,0.85,0.82,0.5,0.88
-DJI Mini 3,249,38,10,4K,30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,0.7,0.4,0.82,0.78,0.45,0.8
-DJI Mini 4 Pro,249,30,20,4K,60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,58,Yes,0.8,0.6,0.88,0.85,0.65,0.85
-DJI Air 3S,720,46,20,4K,120fps,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,76,No,0.88,0.78,0.7,0.8,0.85,0.75
-DJI Neo,300,30,6,4K,30fps,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,28,Yes,0.6,0.3,0.8,0.72,0.3,0.9
-DJI Avata 2,410,21,10,4K,60fps,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,97,No,0.72,0.85,0.5,0.6,0.55,0.65
-DJI Mini 4K,249,30,10,4K,30fps,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,54,Yes,0.68,0.35,0.8,0.7,0.4,0.82
-DJI Mavic 3 Pro,895,43,15,5.1K,50fps,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,0.92,0.88,0.65,0.78,0.95,0.7
-DJI Air 2S,595,31,12,5.4K,30fps,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,0.82,0.72,0.72,0.75,0.8,0.72
-DJI Mavic 3 Classic,895,46,15,5.1K,50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,0.88,0.82,0.68,0.72,0.9,0.7"""
+        # Drones 
+        drones_data = """Model,Weight (gram),Max Flight Time (minutes),Control Range (km),Camera Resolution,Frames Per Sec, Obstacle Avoidance Sensor,Folded Size (mm),Tracking,Orbit Mode,Auto Rotation,Wind Resistance,Battery Capability (mAh),Maximum Flight Speed (km/h),Vertical Video Recording,Release Year,Stability,Sports,Travel,Vlogging,Professional,Easy Of Use
+DJI Flip,249,25,13,4K,30fps,"Downward,  Front-facing",138 x 81 x 58,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,50,Yes,2025,0.75,0.55,0.85,0.82,0.5,0.88
+DJI Mini 3,249,38,10,4K,30fps,No,148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,57,Yes,2023,0.7,0.4,0.82,0.78,0.45,0.8
+DJI Mini 4 Pro,249,30,20,4K,60fps,Omnidirectional,148 x 94 x 64,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2450,58,Yes,2023,0.8,0.6,0.88,0.85,0.65,0.85
+DJI Air 3S,720,46,20,4K,120fps,"Downward,  Front-facing",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,76,No,2024,0.88,0.78,0.7,0.8,0.85,0.75
+DJI Neo,300,30,6,4K,30fps,"Downward,  Front-facing",140 x 82 x 57,Yes,Yes,No,Level 5 wind (38.5 km/h),2600,28,Yes,2024,0.6,0.3,0.8,0.72,0.3,0.9
+DJI Avata 2,410,21,10,4K,60fps,Omnidirectional,180 x 180 x 80,Yes,Yes,Yes,Level 5 wind (38.5 km/h),2420,97,No,2024,0.72,0.85,0.5,0.6,0.55,0.65
+DJI Mini 4K,249,30,10,4K,30fps,"Downward,  Front-facing",148 x 94 x 64,Yes,Yes,No,Level 5 wind (38.5 km/h),2450,54,Yes,2024,0.68,0.35,0.8,0.7,0.4,0.82
+DJI Mavic 3 Pro,895,43,15,5.1K,50fps,Omnidirectional,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,2023,0.92,0.88,0.65,0.78,0.95,0.7
+DJI Air 2S,595,31,12,5.4K,30fps,"Downward,  Forward, Backward",183 x 253 x 77,Yes,Yes,Yes,Level 5 wind (38.5 km/h),3500,68,No,2021,0.82,0.72,0.72,0.75,0.8,0.72
+DJI Mavic 3 Classic,895,46,15,5.1K,50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wind (50 km/h),5000,69,No,2022,0.88,0.82,0.68,0.72,0.9,0.7"""
         specs_dfs['drones'] = pd.read_csv((StringIO(drones_data)))
 
-        # Gimbals (giữ nguyên dữ liệu của bạn)
-        gimbals_data = """Model,Maximum Payload (kg),Battery Life (hours),Number of Stabilization Axes,Device Compatibility,Time-lapse,Follow Mode,App Connectivity,Folded Size (mm),Stability,Travel,Vlogging,Professional,Easy Of Use
-Osmo Mobile 7,0.3,10,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.9,0.88,0.92,0.55,0.88
-Osmo Mobile 6,0.3,6,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.85,0.85,0.88,0.5,0.82
-Osmo Mobile SE,0.3,8,3,phone,Yes,Yes,Yes,290 x 110 x 50,0.8,0.82,0.82,0.45,0.85
-RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340 x 250 x 70,0.78,0.7,0.75,0.8,0.75
-RS4 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.95,0.5,0.65,0.98,0.7
-RS4,3,11,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.92,0.55,0.68,0.95,0.72
-RS3 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.93,0.52,0.66,0.96,0.71"""
+        # Gimbals 
+        gimbals_data = """Model,Maximum Payload (kg),Battery Life (hours),Number of Stabilization Axes,Device Compatibility,Time-lapse,Follow Mode,App Connectivity,Folded Size (mm),Release Year,Stability,Travel,Vlogging,Professional,Easy Of Use
+Osmo Mobile 7,0.3,10,3,phone,Yes,Yes,Yes,290 x 110 x 50,2025,0.9,0.88,0.92,0.55,0.88
+Osmo Mobile 6,0.3,6,3,phone,Yes,Yes,Yes,290 x 110 x 50,2022,0.85,0.85,0.88,0.5,0.82
+Osmo Mobile SE,0.3,8,3,phone,Yes,Yes,Yes,290 x 110 x 50,2022,0.8,0.82,0.82,0.45,0.85
+RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340 x 250 x 70,2025,0.78,0.7,0.75,0.8,0.75
+RS4 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,2024,0.95,0.5,0.65,0.98,0.7
+RS4,3,11,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,0.92,2024,0.55,0.68,0.95,0.72
+RS3 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340 x 250 x 70,2022,0.93,0.52,0.66,0.96,0.71"""
         specs_dfs['gimbals'] = pd.read_csv(StringIO(gimbals_data))
 
-        # Action Cameras (giữ nguyên dữ liệu của bạn)
-        action_cameras_data = """Model,Weight (gram),Video Recording Capabilities,Time-lapse,Slow Motion,Dimensions (mm),Battery Life (minutes),Touchscreen,Dual Screen,Wifi,Bluetooth,USB-C,Shock Resistance,Water Resistance,Stability,Travel,Sports,Vlogging,Durability,Easy Of Use,Low-light Performance
-Osmo Pocket 3,179,4K/120fps,Yes,Yes,140 x 40 x 30,140,Yes,No,Yes,Yes,Yes,No,No,0.92,0.9,0.6,0.95,0.5,0.9,0.85
-Osmo Pocket 2,117,4K/60fps,Yes,Yes,124 x 35 x 30,140,Yes,No,Yes,Yes,Yes,No,No,0.88,0.85,0.55,0.8,0.45,0.82,0.65
-Osmo Action 5,145,"5.3K/60fps, 4K/120fps",Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,20m,0.85,0.75,0.9,0.78,0.95,0.8,0.9
-Osmo Action 4,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,18m,0.82,0.72,0.88,0.75,0.92,0.78,0.88
-Osmo Action 3,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,16m,0.8,0.7,0.85,0.7,0.9,0.75,0.8
-Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
+        # Action Cameras 
+        action_cameras_data = """Model,Weight (gram),Video Recording Capabilities,Time-lapse,Slow Motion,Dimensions (mm),Battery Life (minutes),Touchscreen,Dual Screen,Wifi,Bluetooth,USB-C,Shock Resistance,Water Resistance,Release Year,Stability,Travel,Sports,Vlogging,Durability,Easy Of Use,Low-light Performance
+Osmo Pocket 3,179,4K/120fps,Yes,Yes,140 x 40 x 30,140,Yes,No,Yes,Yes,Yes,No,No,2023,0.92,0.9,0.6,0.95,0.5,0.9,0.85
+Osmo Pocket 2,117,4K/60fps,Yes,Yes,124 x 35 x 30,140,Yes,No,Yes,Yes,Yes,No,No,2020,0.88,0.85,0.55,0.8,0.45,0.82,0.65
+Osmo Action 5,145,"5.3K/60fps, 4K/120fps",Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,Yes,2024,0.85,0.75,0.9,0.78,0.95,0.8,0.9
+Osmo Action 4,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,Yes,2023,0.82,0.72,0.88,0.75,0.92,0.78,0.88
+Osmo Action 3,145,4K/120fps,Yes,Yes,70.5 x 44.2 x 32.8,160,Yes,Yes,Yes,Yes,Yes,Yes,Yes,2022,0.8,0.7,0.85,0.7,0.9,0.75,0.8
+Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,Yes,2021,0.75,0.65,0.8,0.65,0.88,0.7,0.75"""
         specs_dfs['action_cameras'] = pd.read_csv(StringIO(action_cameras_data))
         
 
@@ -190,7 +184,7 @@ Osmo Action 2,56,4K/60fps,Yes,Yes,39 x 39 x 22,70,Yes,No,Yes,Yes,Yes,Yes,10m,0.7
 
             # Chuẩn hóa cột số
             numeric_cols = [
-                "Weight (gram)", "Resolution (MP)", "ISO Min", "ISO Max", 
+                "Weight (gram)", "Resolution (MP)", "ISO Min", "ISO Max","Release Year"
                 "Burst Shooting (fps)", "Battery Life (frames)", "Focal Length (mm)", 
                 "Max Aperture", "Minimum Focusing Distance (mm)", "Max Flight Time (minutes)", 
                 "Control Range (km)", "Battery Capability (mAh)", "Maximum Flight Speed (km/h)", 
@@ -228,8 +222,8 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
     if 'Condition' in criteria and criteria['Condition']:
         condition = criteria['Condition'].lower()
         if condition in ['new', 'used']:
-            df = df[df['Condition'].str.lower() == condition] # Thêm lọc màu sắc cho cameras và lenses
-    # Lọc màu
+            df = df[df['Condition'].str.lower() == condition] 
+    # Lọc màu cho cameras, lenses
     if category in ['cameras', 'lenses'] and 'Colour' in criteria and criteria['Colour']:
         df = df[df['Colour'] == criteria['Colour'].lower()]
     # Lọc theo category
@@ -355,7 +349,7 @@ def apply_filters(df: pd.DataFrame, category: str, criteria: Dict[str, Any]) -> 
         if 'Camera Resolution' in criteria:
             df = df[df['Camera Resolution'] == criteria['Camera Resolution']]
         
-        # # Frames per sec
+        # Frames per sec
         if 'Frames Per Sec' in criteria:
             df = df[df['Frames Per Sec'] == criteria['Frames Per Sec']]
 
@@ -556,6 +550,7 @@ def calculate_scores(df: pd.DataFrame, category: str, selected_purposes: List[st
         
     return df_copy
 
+# Giải thích cho lựa chọn purposes đối với cameras
 def generate_explanation(product_model, selected_purposes, features, price=None):    
     if not selected_purposes:
         return "là sản phẩm phù hợp với các nhu cầu cơ bản của bạn."
@@ -732,7 +727,7 @@ def generate_explanation(product_model, selected_purposes, features, price=None)
         elif criterion == "Autofocus Type" and str(actual_value).lower() == "hybrid":
             desc = "lấy nét Hybrid"
         elif criterion == "Flipscreen" and (actual_value == 1 or str(actual_value).lower() == "yes"):
-            desc = "màn hình lật đầy đủ"
+            desc = "màn hình lật 360o"
         elif criterion == "Quay 4K" and (actual_value == 1 or str(actual_value).lower() == "yes"):
             desc = "quay 4K"
         elif criterion == "External Mic Input" and(actual_value == 1 or str(actual_value).lower() == "yes"):
@@ -740,7 +735,7 @@ def generate_explanation(product_model, selected_purposes, features, price=None)
         elif criterion == "IBIS" and (actual_value == 1 or str(actual_value).lower() == "yes"):
             desc = "chống rung IBIS"
         elif criterion == "Film Simulation" and(actual_value == 1 or str(actual_value).lower() == "yes"):
-            desc = "có Film Simulation"
+            desc = "có giả lập màu film"
         elif criterion == "WiFi" and(actual_value == 1 or str(actual_value).lower() == "yes"):
             if "Bluetooth" in normalized_features and ((normalized_features["Bluetooth"]) == 1 or str(normalized_features["Bluetooth"]).lower() == "true"):
                 desc = "có WiFi/Bluetooth"

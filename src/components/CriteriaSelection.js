@@ -179,8 +179,8 @@ const CriteriaSelection = () => {
                 <SelectField
                     label="Màu sắc"
                     name="Colour"
-                    options={['Đen', 'Bạc', 'Trắng', 'Xám', 'Khác']}
-                    values={['Black', 'Silver', 'White', 'Gray', 'Other']}
+                    options={['Đen', 'Bạc']}
+                    values={['Black', 'Silver']}
                 />
             </>
         );
