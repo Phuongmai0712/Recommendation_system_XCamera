@@ -790,9 +790,10 @@ async def recommend(request: RecommendationRequest):
         filtered_df = apply_filters(df, category, request.criteria)
         
         # Calculate scores based on purposes
-        scored_df = scored_df[scored_df['score'] >= 0.5]
         selected_purposes = request.criteria.get('purposes', [])
         scored_df = calculate_scores(filtered_df, category, selected_purposes)
+        scored_df = scored_df[scored_df['score'] >= 0.5]
+
         
         # Sort and get top products
         top_products = scored_df.sort_values('score', ascending=False)
