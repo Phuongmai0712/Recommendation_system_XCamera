@@ -145,14 +145,14 @@ DJI Mavic 3 Classic,895,46,15,5.1K,50fps,No,231 x 98 x 95,Yes,Yes,Yes,Level 6 wi
 
         # Gimbals 
         gimbals_data = """Model,Maximum Payload (kg),Battery Life (hours),Number of Stabilization Axes,Device Compatibility,Time-lapse,Follow Mode,App Connectivity,Folded Size (mm),Release Year,Stability,Travel,Vlogging,Professional,Easy Of Use
-Osmo Mobile 7,0.3,10,3,phone,Yes,Yes,Yes,290x110x50,2025,0.857142857,0.857142857,0.857142857,0.714285714,0.857142857
-Osmo Mobile 7P,0.3,10,3,phone,Yes,Yes,Yes,190x95x46,2025,1.0,0.857142857,1.0,0.857142857,1.0
-Osmo Mobile 6,0.3,6,3,phone,Yes,Yes,Yes,290x110x50,2022,0.857142857,0.714285714,0.857142857,0.714285714,0.857142857
-Osmo Mobile SE,0.3,8,3,phone,Yes,Yes,Yes,290x110x50,2022,0.714285714,0.857142857,0.571428571,0.428571429,0.714285714
-RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340x250x70,2025,0.714285714,0.571428571,0.571428571,0.714285714,0.714285714
-RS4 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340x250x70,2024,1.0,0.428571429,0.428571429,1.0,0.571428571
-RS4,3,11,3,full-frame camera,Yes,Yes,Yes,340x250x70,2024,0.857142857,0.428571429,0.428571429,0.857142857,0.571428571
-RS3 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340x250x70,2022,1.0,0.428571429,0.428571429,1.0,0.571428571"""
+Osmo Mobile 7,0.3,10,3,phone,Yes,Yes,Yes,290x110x50,2025,0.86,0.86,0.86,0.71,0.86
+Osmo Mobile 7P,0.3,10,3,phone,Yes,Yes,Yes,190x95x46,2025,1.0,0.86,1.0,0.86,1.0
+Osmo Mobile 6,0.3,6,3,phone,Yes,Yes,Yes,290x110x50,2022,0.86,0.71,0.86,0.71,0.86
+Osmo Mobile SE,0.3,8,3,phone,Yes,Yes,Yes,290x110x50,2022,0.71,0.86,0.57,0.43,0.71
+RS4 Mini,2,10,3,small camera,Yes,Yes,Yes,340x250x70,2025,0.71,0.57,0.57,0.71,0.71
+RS4 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340x250x70,2024,1.0,0.43,0.43,1.0,0.57
+RS4,3,11,3,full-frame camera,Yes,Yes,Yes,340x250x70,2024,0.86,0.43,0.43,0.86,0.57
+RS3 Pro,4.5,12,3,full-frame camera,Yes,Yes,Yes,340x250x70,2022,1.0,0.43,0.43,1.0,0.57"""
         specs_dfs['gimbals'] = pd.read_csv(StringIO(gimbals_data))
 
         # Action Cameras 
